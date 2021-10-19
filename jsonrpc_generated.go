@@ -1,7 +1,8 @@
 package lsp
+
 import (
-	"go.bug.st/json"
 	"errors"
+	"go.bug.st/json"
 )
 
 // Any is an intersection type of string, int, bool, Array, Object
@@ -37,7 +38,6 @@ func (r *Any) Value() interface{} {
 		return n
 	}
 
-
 	var r0 string
 	if err := json.Unmarshal(data, &r0); err == nil {
 		return r0
@@ -63,10 +63,8 @@ func (r *Any) Value() interface{} {
 		return r4
 	}
 
-
 	return nil
 }
-
 
 // ResponseResult is an intersection type of string, int, bool, Object
 type ResponseResult []byte
@@ -101,7 +99,6 @@ func (r *ResponseResult) Value() interface{} {
 		return n
 	}
 
-
 	var r0 string
 	if err := json.Unmarshal(data, &r0); err == nil {
 		return r0
@@ -122,10 +119,8 @@ func (r *ResponseResult) Value() interface{} {
 		return r3
 	}
 
-
 	return nil
 }
-
 
 // IntOrString is an intersection type of string, int
 type IntOrString []byte
@@ -155,7 +150,6 @@ func (m *IntOrString) UnmarshalJSON(data []byte) error {
 func (r *IntOrString) Value() interface{} {
 	data := []byte(*r)
 
-
 	var r0 string
 	if err := json.Unmarshal(data, &r0); err == nil {
 		return r0
@@ -166,10 +160,8 @@ func (r *IntOrString) Value() interface{} {
 		return r1
 	}
 
-
 	return nil
 }
-
 
 // IntOrNull is an intersection type of int
 type IntOrNull []byte
@@ -204,16 +196,13 @@ func (r *IntOrNull) Value() interface{} {
 		return n
 	}
 
-
 	var r0 int
 	if err := json.Unmarshal(data, &r0); err == nil {
 		return r0
 	}
 
-
 	return nil
 }
-
 
 // StringOrNull is an intersection type of string
 type StringOrNull []byte
@@ -248,16 +237,13 @@ func (r *StringOrNull) Value() interface{} {
 		return n
 	}
 
-
 	var r0 string
 	if err := json.Unmarshal(data, &r0); err == nil {
 		return r0
 	}
 
-
 	return nil
 }
-
 
 // DocumentURIOrNull is an intersection type of DocumentURI
 type DocumentURIOrNull []byte
@@ -292,16 +278,13 @@ func (r *DocumentURIOrNull) Value() interface{} {
 		return n
 	}
 
-
 	var r0 DocumentURI
 	if err := json.Unmarshal(data, &r0); err == nil {
 		return r0
 	}
 
-
 	return nil
 }
-
 
 // ArrayOrObject is an intersection type of Array, Object
 type ArrayOrObject []byte
@@ -331,7 +314,6 @@ func (m *ArrayOrObject) UnmarshalJSON(data []byte) error {
 func (r *ArrayOrObject) Value() interface{} {
 	data := []byte(*r)
 
-
 	var r0 Array
 	if err := json.Unmarshal(data, &r0); err == nil {
 		return r0
@@ -342,7 +324,5 @@ func (r *ArrayOrObject) Value() interface{} {
 		return r1
 	}
 
-
 	return nil
 }
-
