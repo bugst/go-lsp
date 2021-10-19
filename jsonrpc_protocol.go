@@ -1,5 +1,7 @@
 package lsp
 
+//go:generate go run go.bug.st/lsp/generator jsonrpc_protocol.go -w
+
 import (
 	"errors"
 	"fmt"

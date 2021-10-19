@@ -2,6 +2,7 @@ package lsp
 
 import (
 	"errors"
+
 	"go.bug.st/json"
 )
 

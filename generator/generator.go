@@ -9,6 +9,8 @@ import (
 	"html/template"
 	"os"
 	"strings"
+
+	"github.com/arduino/go-paths-helper"
 )
 
 var packageName string
@@ -27,8 +29,9 @@ func main() {
 	packageName = f.Name.Name
 	fmt.Fprintln(output, "package "+packageName)
 	fmt.Fprint(output, `import (
-	"go.bug.st/json"
 	"errors"
+
+	"go.bug.st/json"
 )
 `)
 	for _, c := range f.Comments {
@@ -43,7 +46,17 @@ func main() {
 		fmt.Println("Error formatting output code:", err)
 		os.Exit(1)
 	}
-	os.Stdout.Write(formatted)
+
+	if len(os.Args) > 2 && os.Args[2] == "-w" {
+		outFile := paths.New(strings.TrimSuffix(os.Args[1], ".go") + "_generated.go")
+		err := outFile.WriteFile(formatted)
+		if err != nil {
+			fmt.Println("Error writing output code:", err)
+			os.Exit(1)
+		}
+	} else {
+		os.Stdout.Write(formatted)
+	}
 }
 
 func generateType(cmdline string) {
