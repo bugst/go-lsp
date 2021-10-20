@@ -21,6 +21,13 @@ type Connection struct {
 	errorHandler        func(error)
 	requestHandler      RequestHandler
 	notificationHandler NotificationHandler
+
+	activeRequests      map[interface{}]*Request
+	activeRequestsMutex sync.Mutex
+}
+
+type Request struct {
+	cancel func()
 }
 
 // RequestHandler handles requests from a jsonrpc Connection.
@@ -37,6 +44,7 @@ func NewConnection(in io.Reader, out io.Writer, requestHandler RequestHandler, n
 		requestHandler:      requestHandler,
 		notificationHandler: notificationHandler,
 		errorHandler:        errorHandler,
+		activeRequests:      map[interface{}]*Request{},
 	}
 	return conn
 }
@@ -75,7 +83,21 @@ func (c *Connection) Run() {
 func (c *Connection) handleRequest(jsonData []byte) {
 	var req RequestMessage
 	if err := json.Unmarshal(jsonData, &req); err == nil {
-		c.requestHandler(context.Background(), req.Method, req.Params, func(result Any, resultErr error) {
+		id := req.ID.Value()
+		ctx, cancel := context.WithCancel(context.Background())
+
+		c.activeRequestsMutex.Lock()
+		c.activeRequests[id] = &Request{
+			cancel: cancel,
+		}
+		c.activeRequestsMutex.Unlock()
+
+		c.requestHandler(ctx, req.Method, req.Params, func(result Any, resultErr error) {
+			c.activeRequestsMutex.Lock()
+			c.activeRequests[id].cancel()
+			delete(c.activeRequests, id)
+			c.activeRequestsMutex.Unlock()
+
 			resp := &ResponseMessage{
 				Message: Message{JSONRPC: "2.0"},
 				ID:      req.ID,
@@ -93,6 +115,21 @@ func (c *Connection) handleRequest(jsonData []byte) {
 
 	var notif NotificationMessage
 	if err := json.Unmarshal(jsonData, &notif); err == nil {
+		if req.Method == "$/cancelRequest" {
+			// Send cancelation signal and exit
+			var params CancelParams
+			if err := json.Unmarshal(*notif.Params, &params); err != nil {
+				c.errorHandler(fmt.Errorf("invalid cancelRequest: %s", err))
+				return
+			}
+			c.activeRequestsMutex.Lock()
+			if req, ok := c.activeRequests[params.ID.Value()]; ok {
+				req.cancel()
+			}
+			c.activeRequestsMutex.Unlock()
+			return
+		}
+
 		c.notificationHandler(context.Background(), notif.Method, notif.Params)
 		return
 	}
