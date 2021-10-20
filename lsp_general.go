@@ -1,5 +1,9 @@
 package lsp
 
+import "encoding/json"
+
+//go:generate go run go.bug.st/lsp/generator lsp_general.go -w
+
 type InitializeParams struct {
 	WorkDoneProgressParams
 
@@ -7,7 +11,7 @@ type InitializeParams struct {
 	// the process has not been started by another process. If the parent
 	// process is not alive then the server should exit (see exit notification)
 	// its process.
-	ProcessID IntOrNull `json:"processId,required"`
+	ProcessID *int `json:"processId,required"`
 
 	// Information about the client
 	//
@@ -44,13 +48,13 @@ type InitializeParams struct {
 	RootURI DocumentURIOrNull `json:"rootUri,required"`
 
 	// User provided initialization options.
-	InitializationOptions *Any `json:"initializationOptions,omitempty"`
+	InitializationOptions json.RawMessage `json:"initializationOptions,omitempty"`
 
 	// The capabilities provided by the client (editor or tool)
-	// TODO: capabilities: ClientCapabilities
+	Capabilities ClientCapabilities `json:"capabilities,required"`
 
 	// The initial trace setting. If omitted trace is disabled ('off').
-	// TODO: trace?: TraceValue
+	Trace *TraceValue `json:"trace,omitempy"`
 
 	// The workspace folders configured in the client when the server starts.
 	// This property is only available if the client supports workspace folders.
@@ -58,7 +62,42 @@ type InitializeParams struct {
 	// configured.
 	//
 	// @since 3.6.0
-	// TODO: workspaceFolders?: WorkspaceFolder[] | null
+	WorkspaceFolders WorkspaceFolderArrayOrNull `json:"workspaceFolders,omitempty"`
+}
+
+// lsp:generate WorkspaceFolderArray|Null as WorkspaceFolderArrayOrNull
+
+type TraceValue string
+
+const TraceValueOff TraceValue = "off"
+const TraceValueMessages TraceValue = "messages"
+const TraceValueVerbose TraceValue = "verbose"
+
+type WorkspaceFolderArray []WorkspaceFolder
+
+type WorkspaceFolder struct {
+	// The associated URI for this workspace folder.
+	URI DocumentURI `json:"uri,required"`
+
+	// The name of the workspace folder. Used to refer to this
+	// workspace folder in the user interface.
+	Name string `json:"name,required"`
+}
+
+type InitializeResult struct {
+	// The capabilities the language server provides.
+	Capabilities ServerCapabilities `json:"capabilities,required"`
+
+	// Information about the server.
+	//
+	// @since 3.15.0
+	ServerInfo *struct {
+		// The name of the server as defined by the server.
+		Name string `json:"name,required"`
+
+		// The server's version as defined by the server.
+		Version *string `json:"version,omitempty"`
+	} `json:"serverInfo,omitempty"`
 }
 
 // InitializedParams The initialized notification is sent from the client

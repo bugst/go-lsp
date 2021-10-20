@@ -16,37 +16,46 @@ type Message struct {
 	JSONRPC string `json:"jsonrpc,required"`
 }
 
+type RequestID json.RawMessage
+
 // A RequestMessage to describe a request between the client and the server. Every
 // processed request must send a response back to the sender of the request.
 type RequestMessage struct {
 	Message
 
 	// The request id.
-	ID IntOrString `json:"id,required"`
+	ID json.RawMessage `json:"id,required"`
 
 	// The method to be invoked.
 	Method string `json:"method,required"`
 
 	// The method's params.
-	Params *ArrayOrObject `json:"params,omitempty"`
+	Params json.RawMessage `json:"params,omitempty"`
 }
 
-// A ResponseMessage sent as a result of a request. If a request doesn’t provide a
+// A ResponseMessageSuccess sent as a result of a request. If a request doesn’t provide a
 // result value the receiver of a request still needs to return a response message
-// to conform to the JSON RPC specification. The result property of the ResponseMessage
+// to conform to the JSON RPC specification. The result property of the ResponseMessageSuccess
 // should be set to null in this case to signal a successful request.
-type ResponseMessage struct {
+type ResponseMessageSuccess struct {
 	Message
 
 	// The request id.
-	ID IntOrString `json:"id,required"`
+	ID json.RawMessage `json:"id,required"`
 
 	// The result of a request. This member is REQUIRED on success.
 	// This member MUST NOT exist if there was an error invoking the method.
-	Result Any `json:"result,omitempty"`
+	Result json.RawMessage `json:"result,required"`
+}
+
+type ResponseMessageError struct {
+	Message
+
+	// The request id.
+	ID json.RawMessage `json:"id,required"`
 
 	// The error object in case a request fails.
-	Error *ResponseError `json:"error,omitempty"`
+	Error ResponseError `json:"error,required"`
 }
 
 // ResponseError is the error object in case a request fails.
@@ -55,11 +64,11 @@ type ResponseError struct {
 	Code int `json:"code,required"`
 
 	// A string providing a short description of the error.
-	Message string `json:"message,omitempty"`
+	Message string `json:"message"`
 
 	// A primitive or structured value that contains additional
 	// information about the error. Can be omitted.
-	Data Any `json:"data,omitempty"`
+	Data json.RawMessage `json:"data,omitempty"`
 }
 
 const (
@@ -112,7 +121,7 @@ type NotificationMessage struct {
 	Method string `json:"method,required"`
 
 	// The notification's params.
-	Params *ArrayOrObject `json:"params,omitempty"`
+	Params json.RawMessage `json:"params,omitempty"`
 }
 
 // CancelParams The base protocol offers support for request cancellation. To
@@ -125,7 +134,7 @@ type NotificationMessage struct {
 // to ErrorCodesRequestCancelled.
 type CancelParams struct {
 	// ID The request id to cancel.
-	ID IntOrString `json:"id,required"`
+	ID json.RawMessage `json:"id,required"`
 }
 
 // ProgressParams The base protocol offers also support to report progress in a generic fashion.
@@ -139,25 +148,15 @@ type ProgressParams struct {
 	Token ProgressToken `json:"token,required"`
 
 	// The progress data.
-	Value Any `json:"value,required"`
+	Value json.RawMessage `json:"value,required"`
 }
 
 // ProgressToken is a progress token
-type ProgressToken IntOrString
-
-// lsp:generate string|int|bool|Array|Object|Null as Any
-
-// lsp:generate string|int|bool|Object|Null as ResponseResult
-
-// lsp:generate string|int as IntOrString
-
-// lsp:generate int|Null as IntOrNull
+type ProgressToken json.RawMessage
 
 // lsp:generate string|Null as StringOrNull
 
 // lsp:generate DocumentURI|Null as DocumentURIOrNull
-
-// lsp:generate Array|Object as ArrayOrObject
 
 // Array represent an Array
 type Array []json.RawMessage

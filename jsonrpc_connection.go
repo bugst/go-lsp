@@ -22,7 +22,7 @@ type Connection struct {
 	requestHandler      RequestHandler
 	notificationHandler NotificationHandler
 
-	activeRequests      map[interface{}]*Request
+	activeRequests      map[string]*Request
 	activeRequestsMutex sync.Mutex
 }
 
@@ -31,10 +31,10 @@ type Request struct {
 }
 
 // RequestHandler handles requests from a jsonrpc Connection.
-type RequestHandler func(ctx context.Context, method string, params *ArrayOrObject, respCallback func(result Any, err error))
+type RequestHandler func(ctx context.Context, method string, params json.RawMessage, respCallback func(result json.RawMessage, err error))
 
 // NotificationHandler handles notifications from a jsonrpc Connection.
-type NotificationHandler func(ctx context.Context, method string, params *ArrayOrObject)
+type NotificationHandler func(ctx context.Context, method string, params json.RawMessage)
 
 // NewConnection starts a new
 func NewConnection(in io.Reader, out io.Writer, requestHandler RequestHandler, notificationHandler NotificationHandler, errorHandler func(error)) *Connection {
@@ -44,7 +44,7 @@ func NewConnection(in io.Reader, out io.Writer, requestHandler RequestHandler, n
 		requestHandler:      requestHandler,
 		notificationHandler: notificationHandler,
 		errorHandler:        errorHandler,
-		activeRequests:      map[interface{}]*Request{},
+		activeRequests:      map[string]*Request{},
 	}
 	return conn
 }
@@ -83,7 +83,7 @@ func (c *Connection) Run() {
 func (c *Connection) handleRequest(jsonData []byte) {
 	var req RequestMessage
 	if err := json.Unmarshal(jsonData, &req); err == nil {
-		id := req.ID.Value()
+		id := string(req.ID)
 		ctx, cancel := context.WithCancel(context.Background())
 
 		c.activeRequestsMutex.Lock()
@@ -92,16 +92,21 @@ func (c *Connection) handleRequest(jsonData []byte) {
 		}
 		c.activeRequestsMutex.Unlock()
 
-		c.requestHandler(ctx, req.Method, req.Params, func(result Any, resultErr error) {
+		c.requestHandler(ctx, req.Method, req.Params, func(result json.RawMessage, resultErr error) {
 			c.activeRequestsMutex.Lock()
 			c.activeRequests[id].cancel()
 			delete(c.activeRequests, id)
 			c.activeRequestsMutex.Unlock()
 
-			resp := &ResponseMessage{
-				Message: Message{JSONRPC: "2.0"},
-				ID:      req.ID,
-				Result:  result,
+			var resp interface{}
+			if resultErr != nil {
+				resp = &ResponseMessageError{}
+			} else {
+				resp = &ResponseMessageSuccess{
+					Message: Message{JSONRPC: "2.0"},
+					ID:      req.ID,
+					Result:  result,
+				}
 			}
 			_ = resultErr // TODO...
 			if sendErr := c.Send(resp); sendErr != nil {
@@ -118,12 +123,13 @@ func (c *Connection) handleRequest(jsonData []byte) {
 		if req.Method == "$/cancelRequest" {
 			// Send cancelation signal and exit
 			var params CancelParams
-			if err := json.Unmarshal(*notif.Params, &params); err != nil {
+			if err := json.Unmarshal(notif.Params, &params); err != nil {
 				c.errorHandler(fmt.Errorf("invalid cancelRequest: %s", err))
 				return
 			}
 			c.activeRequestsMutex.Lock()
-			if req, ok := c.activeRequests[params.ID.Value()]; ok {
+			id := string(params.ID)
+			if req, ok := c.activeRequests[id]; ok {
 				req.cancel()
 			}
 			c.activeRequestsMutex.Unlock()
