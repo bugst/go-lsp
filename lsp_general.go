@@ -2,8 +2,6 @@ package lsp
 
 import "encoding/json"
 
-//go:generate go run go.bug.st/lsp/generator lsp_general.go -w
-
 type InitializeParams struct {
 	WorkDoneProgressParams
 
@@ -38,14 +36,14 @@ type InitializeParams struct {
 	// if no folder is open.
 	//
 	// @deprecated in favour of `rootUri`.
-	RootPath *StringOrNull `json:"rootPath,omitempty"`
+	RootPath *string `json:"rootPath,omitempty"`
 
 	// The rootUri of the workspace. Is null if no
 	// folder is open. If both `rootPath` and `rootUri` are set
 	// `rootUri` wins.
 	//
 	// @deprecated in favour of `workspaceFolders`
-	RootURI DocumentURIOrNull `json:"rootUri,required"`
+	RootURI *DocumentURI `json:"rootUri,required"`
 
 	// User provided initialization options.
 	InitializationOptions json.RawMessage `json:"initializationOptions,omitempty"`
@@ -62,18 +60,14 @@ type InitializeParams struct {
 	// configured.
 	//
 	// @since 3.6.0
-	WorkspaceFolders WorkspaceFolderArrayOrNull `json:"workspaceFolders,omitempty"`
+	WorkspaceFolders *[]WorkspaceFolder `json:"workspaceFolders"`
 }
-
-// lsp:generate WorkspaceFolderArray|Null as WorkspaceFolderArrayOrNull
 
 type TraceValue string
 
 const TraceValueOff TraceValue = "off"
 const TraceValueMessages TraceValue = "messages"
 const TraceValueVerbose TraceValue = "verbose"
-
-type WorkspaceFolderArray []WorkspaceFolder
 
 type WorkspaceFolder struct {
 	// The associated URI for this workspace folder.
@@ -100,6 +94,21 @@ type InitializeResult struct {
 	} `json:"serverInfo,omitempty"`
 }
 
+// If the protocol version provided by the client can't be handled by the
+// server.
+//
+// @deprecated This initialize error got replaced by client capabilities.
+// There is no version handshake in version 3.0x
+const InitializeErrorUnknownProtocolVersion ErrorCode = 1
+
+type InitializeError struct {
+	// Indicates whether the client execute the following retry logic:
+	// (1) show the message provided by the ResponseError to the user
+	// (2) user selects retry or cancel
+	// (3) if user selected retry the initialize method is sent again.
+	Retry bool `json:"retry,required"`
+}
+
 // InitializedParams The initialized notification is sent from the client
 // to the server after the client received the result of the initialize
 // equest but before the client is sending any other request or notification
@@ -107,3 +116,17 @@ type InitializeResult struct {
 // example to dynamically register capabilities. The initialized
 // notification may only be sent once.
 type InitializedParams struct{}
+
+type LogTraceParams struct {
+	// The message to be logged.
+	Message string `json:"message,required"`
+
+	// Additional information that can be computed if the `trace` configuration
+	// is set to `'verbose'`
+	Verbose *string `json:"verbose,omitempty"`
+}
+
+type SetTraceParams struct {
+	// The new value that should be assigned to the trace setting.
+	Value TraceValue `json:"value,required"`
+}

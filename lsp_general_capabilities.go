@@ -13,13 +13,13 @@ type ServerCapabilities struct {
 	// `TextDocumentSyncKind.None`.
 	TextDocumentSync *TextDocumentSyncOptions `json:"textDocumentSync,omitempty"`
 
+	// The server provides completion support.
+	CompletionProvider *CompletionOptions `json:"completionProvider,omitempty"`
+
+	// The server provides hover support.
+	HoverProvider *HoverOptions `json:"hoverProvider,omitempty"`
+
 	/*
-		// The server provides completion support.
-		completionProvider?: CompletionOptions;
-
-		// The server provides hover support.
-		hoverProvider?: boolean|HoverOptions;
-
 		// The server provides signature help support.
 		signatureHelpProvider?: SignatureHelpOptions;
 
@@ -167,13 +167,13 @@ const TextDocumentSyncKindIncremental TextDocumentSyncKind = 2
 type TextDocumentSyncOptions struct {
 	// Open and close notifications are sent to the server. If omitted open
 	// close notification should not be sent.
-	OpenClose *bool `json:"openClose,omitempty"`
+	OpenClose bool `json:"openClose,omitempty"`
 
 	// Change notifications are sent to the server. See
 	// TextDocumentSyncKind.None, TextDocumentSyncKind.Full and
 	// TextDocumentSyncKind.Incremental. If omitted it defaults to
 	// TextDocumentSyncKind.None.
-	Change *TextDocumentSyncKind `json:"change,omitempty"`
+	Change TextDocumentSyncKind `json:"change,omitempty"`
 
 	// If present will save notifications are sent to the server. If omitted
 	// the notification should not be sent.
@@ -196,7 +196,9 @@ type SaveOptions struct {
 func (s *SaveOptions) UnmarshalJSON(data []byte) error {
 	save := false
 	if err := json.Unmarshal(data, &save); err == nil {
-		*s = SaveOptions{}
+		if save {
+			*s = SaveOptions{}
+		}
 		return nil
 	}
 
@@ -206,4 +208,69 @@ func (s *SaveOptions) UnmarshalJSON(data []byte) error {
 		return nil
 	}
 	return fmt.Errorf("expected boolean or SaveOptions")
+}
+
+type CompletionOptions struct {
+	WorkDoneProgressOptions
+
+	// Most tools trigger completion request automatically without explicitly
+	// requesting it using a keyboard shortcut (e.g. Ctrl+Space). Typically they
+	// do so when the user starts to type an identifier. For example if the user
+	// types `c` in a JavaScript file code complete will automatically pop up
+	// present `console` besides others as a completion item. Characters that
+	// make up identifiers don't need to be listed here.
+	//
+	// If code complete should automatically be trigger on characters not being
+	// valid inside an identifier (for example `.` in JavaScript) list them in
+	// `triggerCharacters`.
+	TriggerCharacters []string `json:"triggerCharacters,omitempty"`
+
+	// The list of all possible characters that commit a completion. This field
+	// can be used if clients don't support individual commit characters per
+	// completion item. See client capability
+	// `completion.completionItem.commitCharactersSupport`.
+	//
+	// If a server provides both `allCommitCharacters` and commit characters on
+	// an individual completion item the ones on the completion item win.
+	//
+	// @since 3.2.0
+	AllCommitCharacters []string `json:"allCommitCharacters,omitempty"`
+
+	// The server provides support to resolve additional
+	// information for a completion item.
+	ResolveProvider bool `json:"resolveProvider,omitempty"`
+
+	// The server supports the following `CompletionItem` specific
+	// capabilities.
+	//
+	// @since 3.17.0 - proposed state
+	CompletionItem struct {
+		// The server has support for completion item label
+		// details (see also `CompletionItemLabelDetails`) when receiving
+		// a completion item in a resolve call.
+		//
+		// @since 3.17.0 - proposed state
+		LabelDetailsSupport bool `json:"labelDetailsSupport,omitempty"`
+	} `json:"completionItem,omitempty"`
+}
+
+type HoverOptions struct {
+	WorkDoneProgressOptions
+}
+
+func (s *HoverOptions) UnmarshalJSON(data []byte) error {
+	save := false
+	if err := json.Unmarshal(data, &save); err == nil {
+		if save {
+			*s = HoverOptions{}
+		}
+		return nil
+	}
+
+	var res HoverOptions
+	if err := json.Unmarshal(data, &res); err != nil {
+		*s = res
+		return nil
+	}
+	return fmt.Errorf("expected boolean or HoverOptions")
 }

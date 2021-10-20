@@ -61,7 +61,7 @@ type ResponseMessageError struct {
 // ResponseError is the error object in case a request fails.
 type ResponseError struct {
 	// A number indicating the error type that occurred.
-	Code int `json:"code,required"`
+	Code ErrorCode `json:"code,required"`
 
 	// A string providing a short description of the error.
 	Message string `json:"message"`
@@ -71,14 +71,16 @@ type ResponseError struct {
 	Data json.RawMessage `json:"data,omitempty"`
 }
 
+type ErrorCode int
+
 const (
 	// Defined by JSON RPC
 
-	ErrorCodesParseError     = -32700
-	ErrorCodesInvalidRequest = -32600
-	ErrorCodesMethodNotFound = -32601
-	ErrorCodesInvalidParams  = -32602
-	ErrorCodesInternalError  = -32603
+	ErrorCodesParseError     ErrorCode = -32700
+	ErrorCodesInvalidRequest ErrorCode = -32600
+	ErrorCodesMethodNotFound ErrorCode = -32601
+	ErrorCodesInvalidParams  ErrorCode = -32602
+	ErrorCodesInternalError  ErrorCode = -32603
 
 	// This is the start range of JSON RPC reserved error codes.
 	// It doesn't denote a real error code. No LSP error codes should
@@ -87,29 +89,29 @@ const (
 	// are left in the range.
 	//
 	// @since 3.16.0
-	ErrorCodesJsonrpcReservedErrorRangeStart = -32099
+	ErrorCodesJsonrpcReservedErrorRangeStart ErrorCode = -32099
 
-	ErrorCodesServerNotInitialized = -32002
-	ErrorCodesUnknownErrorCode     = -32001
+	ErrorCodesServerNotInitialized ErrorCode = -32002
+	ErrorCodesUnknownErrorCode     ErrorCode = -32001
 
 	// This is the start range of JSON RPC reserved error codes.
 	// It doesn't denote a real error code.
-	ErrorCodesJsonrpcReservedErrorRangeEnd = -32000
+	ErrorCodesJsonrpcReservedErrorRangeEnd ErrorCode = -32000
 
 	// This is the start range of LSP reserved error codes.
 	// It doesn't denote a real error code.
 	//
 	// @since 3.16.0
-	ErrorCodesLspReservedErrorRangeStart = -32899
+	ErrorCodesLspReservedErrorRangeStart ErrorCode = -32899
 
-	ErrorCodesContentModified  = -32801
-	ErrorCodesRequestCancelled = -32800
+	ErrorCodesContentModified  ErrorCode = -32801
+	ErrorCodesRequestCancelled ErrorCode = -32800
 
 	// This is the end range of LSP reserved error codes.
 	// It doesn't denote a real error code.
 	//
 	// @since 3.16.0
-	ErrorCodesLspReservedErrorRangeEnd = -32800
+	ErrorCodesLspReservedErrorRangeEnd ErrorCode = -32800
 )
 
 // NotificationMessage A processed notification message must not send
@@ -155,8 +157,6 @@ type ProgressParams struct {
 type ProgressToken json.RawMessage
 
 // lsp:generate string|Null as StringOrNull
-
-// lsp:generate DocumentURI|Null as DocumentURIOrNull
 
 // Array represent an Array
 type Array []json.RawMessage
