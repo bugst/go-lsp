@@ -76,73 +76,20 @@ func (c *Connection) Run() {
 		} else if n != dataLen {
 			c.errorHandler(fmt.Errorf("expected %d bytes but %d have been read", dataLen, n))
 		}
-		c.handleRequest(jsonData)
+		c.handleIncomingData(jsonData)
 	}
 }
 
-func (c *Connection) handleRequest(jsonData []byte) {
+func (c *Connection) handleIncomingData(jsonData []byte) {
 	var req RequestMessage
 	if err := json.Unmarshal(jsonData, &req); err == nil {
-		id := string(req.ID)
-		ctx, cancel := context.WithCancel(context.Background())
-
-		c.activeInRequestsMutex.Lock()
-		c.activeInRequests[id] = &request{
-			cancel: cancel,
-		}
-		c.activeInRequestsMutex.Unlock()
-
-		c.requestHandler(ctx, req.Method, req.Params, func(result json.RawMessage, resultErr error) {
-			c.activeInRequestsMutex.Lock()
-			c.activeInRequests[id].cancel()
-			delete(c.activeInRequests, id)
-			c.activeInRequestsMutex.Unlock()
-
-			var resp interface{}
-			if resultErr != nil {
-				resp = &ResponseMessageError{
-					JSONRPC: "2.0",
-					ID:      req.ID,
-					Error: ResponseError{
-						Code:    1, // TODO... maybe resultErr must be a ResponseError?
-						Message: resultErr.Error(),
-					},
-				}
-			} else {
-				resp = &ResponseMessageSuccess{
-					JSONRPC: "2.0",
-					ID:      req.ID,
-					Result:  result,
-				}
-			}
-			if sendErr := c.Send(resp); sendErr != nil {
-				c.errorHandler(fmt.Errorf("error sending response: %s", sendErr))
-				c.Close()
-			}
-		})
-
+		c.handleIncomingRequest(&req)
 		return
 	}
 
 	var notif NotificationMessage
 	if err := json.Unmarshal(jsonData, &notif); err == nil {
-		if req.Method == "$/cancelRequest" {
-			// Send cancelation signal and exit
-			var params CancelParams
-			if err := json.Unmarshal(notif.Params, &params); err != nil {
-				c.errorHandler(fmt.Errorf("invalid cancelRequest: %s", err))
-				return
-			}
-			c.activeInRequestsMutex.Lock()
-			id := string(params.ID)
-			if req, ok := c.activeInRequests[id]; ok {
-				req.cancel()
-			}
-			c.activeInRequestsMutex.Unlock()
-			return
-		}
-
-		c.notificationHandler(context.Background(), notif.Method, notif.Params)
+		c.handleIncomingNotification(&notif)
 		return
 	}
 
@@ -150,8 +97,70 @@ func (c *Connection) handleRequest(jsonData []byte) {
 	c.Close()
 }
 
-func (c *Connection) Close() {
+func (c *Connection) handleIncomingRequest(req *RequestMessage) {
+	id := string(req.ID)
+	ctx, cancel := context.WithCancel(context.Background())
 
+	c.activeInRequestsMutex.Lock()
+	c.activeInRequests[id] = &request{
+		cancel: cancel,
+	}
+	c.activeInRequestsMutex.Unlock()
+
+	c.requestHandler(ctx, req.Method, req.Params, func(result json.RawMessage, resultErr error) {
+		c.activeInRequestsMutex.Lock()
+		c.activeInRequests[id].cancel()
+		delete(c.activeInRequests, id)
+		c.activeInRequestsMutex.Unlock()
+
+		var resp interface{}
+		if resultErr != nil {
+			resp = &ResponseMessageError{
+				JSONRPC: "2.0",
+				ID:      req.ID,
+				Error: ResponseError{
+					Code:    1, // TODO... maybe resultErr must be a ResponseError?
+					Message: resultErr.Error(),
+				},
+			}
+		} else {
+			resp = &ResponseMessageSuccess{
+				JSONRPC: "2.0",
+				ID:      req.ID,
+				Result:  result,
+			}
+		}
+		if sendErr := c.Send(resp); sendErr != nil {
+			c.errorHandler(fmt.Errorf("error sending response: %s", sendErr))
+			c.Close()
+		}
+	})
+}
+
+func (c *Connection) handleIncomingNotification(notif *NotificationMessage) {
+	if notif.Method == "$/cancelRequest" {
+		// Send cancelation signal and exit
+		var params CancelParams
+		if err := json.Unmarshal(notif.Params, &params); err != nil {
+			c.errorHandler(fmt.Errorf("invalid cancelRequest: %s", err))
+			return
+		}
+		c.cancelIncomingRequest(params.ID)
+		return
+	}
+
+	c.notificationHandler(context.Background(), notif.Method, notif.Params)
+}
+
+func (c *Connection) cancelIncomingRequest(id json.RawMessage) {
+	c.activeInRequestsMutex.Lock()
+	if req, ok := c.activeInRequests[string(id)]; ok {
+		req.cancel()
+	}
+	c.activeInRequestsMutex.Unlock()
+}
+
+func (c *Connection) Close() {
 }
 
 func (c *Connection) Send(data interface{}) error {
