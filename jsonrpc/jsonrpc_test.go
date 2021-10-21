@@ -104,3 +104,57 @@ func TestRPCConnection(t *testing.T) {
 	//require.Equal(t, "", output.String())
 	fmt.Println(output.String())
 }
+
+func TestUnmarshallingRequestVsResponse(t *testing.T) {
+	require := require.New(t)
+	var notification NotificationMessage
+	var request RequestMessage
+	var responseSuccess ResponseMessageSuccess
+	var responseError ResponseMessageError
+
+	notificationData := []byte(`{
+		"jsonrpc": "2.0",
+		"method": "textDocument/didOpen",
+		"params": {
+		}
+	}`)
+	require.NoError(json.Unmarshal(notificationData, &notification))
+	require.Error(json.Unmarshal(notificationData, &request))
+	require.Error(json.Unmarshal(notificationData, &responseSuccess))
+	require.Error(json.Unmarshal(notificationData, &responseError))
+
+	requestData := []byte(`{
+		"jsonrpc": "2.0",
+		"id": 1,
+		"method": "textDocument/didOpen",
+		"params": {
+		}
+	}`)
+	require.NoError(json.Unmarshal(requestData, &notification))
+	require.NoError(json.Unmarshal(requestData, &request)) // a request message can be unmarshalled into a Notification too !!
+	require.Error(json.Unmarshal(requestData, &responseSuccess))
+	require.Error(json.Unmarshal(requestData, &responseError))
+
+	responseSuccessData := []byte(`{
+		"jsonrpc": "2.0",
+		"id": 1,
+		"result": {
+		}
+	}`)
+	require.Error(json.Unmarshal(responseSuccessData, &notification))
+	require.Error(json.Unmarshal(responseSuccessData, &request))
+	require.NoError(json.Unmarshal(responseSuccessData, &responseSuccess))
+	require.Error(json.Unmarshal(responseSuccessData, &responseError))
+
+	responseErrorData := []byte(`{
+		"jsonrpc": "2.0",
+		"id": 1,
+		"error": {
+			"code": 1
+		}
+	}`)
+	require.Error(json.Unmarshal(responseErrorData, &notification))
+	require.Error(json.Unmarshal(responseErrorData, &request))
+	require.Error(json.Unmarshal(responseErrorData, &responseSuccess))
+	require.NoError(json.Unmarshal(responseErrorData, &responseError))
+}
