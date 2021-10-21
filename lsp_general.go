@@ -1,6 +1,10 @@
 package lsp
 
-import "encoding/json"
+import (
+	"encoding/json"
+
+	"go.bug.st/lsp/jsonrpc"
+)
 
 type InitializeParams struct {
 	WorkDoneProgressParams
@@ -99,7 +103,7 @@ type InitializeResult struct {
 //
 // @deprecated This initialize error got replaced by client capabilities.
 // There is no version handshake in version 3.0x
-const InitializeErrorUnknownProtocolVersion ErrorCode = 1
+const InitializeErrorUnknownProtocolVersion jsonrpc.ErrorCode = 1
 
 type InitializeError struct {
 	// Indicates whether the client execute the following retry logic:

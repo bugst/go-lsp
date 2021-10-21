@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"go.bug.st/json"
+	"go.bug.st/lsp/jsonrpc"
 )
 
 // Client is an LSP client
@@ -13,18 +14,18 @@ type Client struct{}
 // Server is an LSP Server
 type Server struct {
 	handler ServerHandler
-	conn    *Connection
+	conn    *jsonrpc.Connection
 }
 
 // ServerHandler is an LSP Server message handler
 type ServerHandler interface {
-	Initialize(ctx context.Context, conn Connection, params InitializeParams)
+	Initialize(ctx context.Context, conn jsonrpc.Connection, params InitializeParams)
 }
 
 func NewServer(in io.Reader, out io.Writer, handler ServerHandler) *Server {
 	serv := &Server{}
 	serv.handler = handler
-	serv.conn = NewConnection(in, out, serv.RequestHandler, serv.NotificationHandler, serv.ErrorHandler)
+	serv.conn = jsonrpc.NewConnection(in, out, serv.RequestHandler, serv.NotificationHandler, serv.ErrorHandler)
 	return serv
 }
 

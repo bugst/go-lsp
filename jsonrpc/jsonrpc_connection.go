@@ -1,4 +1,4 @@
-package lsp
+package jsonrpc
 
 import (
 	"bufio"
@@ -100,15 +100,21 @@ func (c *Connection) handleRequest(jsonData []byte) {
 
 			var resp interface{}
 			if resultErr != nil {
-				resp = &ResponseMessageError{}
+				resp = &ResponseMessageError{
+					JSONRPC: "2.0",
+					ID:      req.ID,
+					Error: ResponseError{
+						Code:    1, // TODO... maybe resultErr must be a ResponseError?
+						Message: resultErr.Error(),
+					},
+				}
 			} else {
 				resp = &ResponseMessageSuccess{
-					Message: Message{JSONRPC: "2.0"},
+					JSONRPC: "2.0",
 					ID:      req.ID,
 					Result:  result,
 				}
 			}
-			_ = resultErr // TODO...
 			if sendErr := c.Send(resp); sendErr != nil {
 				c.errorHandler(fmt.Errorf("error sending response: %s", sendErr))
 				c.Close()

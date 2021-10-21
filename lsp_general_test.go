@@ -14,6 +14,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/require"
 	"go.bug.st/json"
+	"go.bug.st/lsp/jsonrpc"
 )
 
 var sketchPath = paths.New("/home/user/sketch")
@@ -129,7 +130,7 @@ func TestLSPInitializeMessages(t *testing.T) {
 	resp := ""
 	output := &bytes.Buffer{}
 	var wg sync.WaitGroup
-	conn := NewConnection(
+	conn := jsonrpc.NewConnection(
 		bufio.NewReader(strings.NewReader(testdata)),
 		output,
 		func(ctx context.Context, method string, params json.RawMessage, respCallback func(json.RawMessage, error)) {

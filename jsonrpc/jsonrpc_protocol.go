@@ -1,21 +1,16 @@
-package lsp
+package jsonrpc
 
 import (
 	"go.bug.st/json"
 )
-
-// A Message as defined by JSON-RPC. The language server protocol
-// always uses “2.0” as the jsonrpc version.
-type Message struct {
-	JSONRPC string `json:"jsonrpc,required"`
-}
 
 type RequestID json.RawMessage
 
 // A RequestMessage to describe a request between the client and the server. Every
 // processed request must send a response back to the sender of the request.
 type RequestMessage struct {
-	Message
+	// The language server protocol always uses “2.0” as the jsonrpc version.
+	JSONRPC string `json:"jsonrpc,required"`
 
 	// The request id.
 	ID json.RawMessage `json:"id,required"`
@@ -32,7 +27,8 @@ type RequestMessage struct {
 // to conform to the JSON RPC specification. The result property of the ResponseMessageSuccess
 // should be set to null in this case to signal a successful request.
 type ResponseMessageSuccess struct {
-	Message
+	// The language server protocol always uses “2.0” as the jsonrpc version.
+	JSONRPC string `json:"jsonrpc,required"`
 
 	// The request id.
 	ID json.RawMessage `json:"id,required"`
@@ -43,7 +39,8 @@ type ResponseMessageSuccess struct {
 }
 
 type ResponseMessageError struct {
-	Message
+	// The language server protocol always uses “2.0” as the jsonrpc version.
+	JSONRPC string `json:"jsonrpc,required"`
 
 	// The request id.
 	ID json.RawMessage `json:"id,required"`
@@ -111,7 +108,8 @@ const (
 // NotificationMessage A processed notification message must not send
 // a response back. They work like events.
 type NotificationMessage struct {
-	Message
+	// The language server protocol always uses “2.0” as the jsonrpc version.
+	JSONRPC string `json:"jsonrpc,required"`
 
 	// The method to be invoked.
 	Method string `json:"method,required"`
