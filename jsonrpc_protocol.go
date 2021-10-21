@@ -1,12 +1,6 @@
 package lsp
 
-//go:generate go run go.bug.st/lsp/generator jsonrpc_protocol.go -w
-
 import (
-	"errors"
-	"fmt"
-	"strings"
-
 	"go.bug.st/json"
 )
 
@@ -155,55 +149,3 @@ type ProgressParams struct {
 
 // ProgressToken is a progress token
 type ProgressToken json.RawMessage
-
-// lsp:generate string|Null as StringOrNull
-
-// Array represent an Array
-type Array []json.RawMessage
-
-// Object represents an object
-type Object json.RawMessage
-
-// MarshalJSON implements json.Marshaler
-func (n Object) MarshalJSON() ([]byte, error) {
-	return n, nil
-}
-
-// UnmarshalJSON implements json.Unmarshaler
-func (n *Object) UnmarshalJSON(data []byte) error {
-	if n == nil {
-		return errors.New("lsp.Object: UnmarshalJSON on nil pointer")
-	}
-	if len(data) < 2 || data[0] != '{' {
-		return fmt.Errorf("lsp.Object: expected starting object '{' but founr '%c'", data[0])
-	}
-	if last := data[len(data)-1]; last != '}' {
-		return fmt.Errorf("lsp.Object: object not closed (expected '}' but founr '%c')", last)
-	}
-	*n = append((*n)[0:0], data...)
-	return nil
-}
-
-func (n *Object) String() string {
-	return string(*n)
-}
-
-// Null is a "null" value
-type Null struct{}
-
-// MarshalJSON implements json.Marshaler
-func (Null) MarshalJSON() ([]byte, error) {
-	return []byte("null"), nil
-}
-
-// UnmarshalJSON implements json.Unmarshaler
-func (n *Null) UnmarshalJSON(data []byte) error {
-	if strings.TrimSpace(string(data)) == "null" {
-		return nil
-	}
-	return errors.New("expected 'null'")
-}
-
-func (*Null) String() string {
-	return "null"
-}
