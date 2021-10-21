@@ -22,11 +22,11 @@ type Connection struct {
 	requestHandler      RequestHandler
 	notificationHandler NotificationHandler
 
-	activeRequests      map[string]*Request
+	activeRequests      map[string]*request
 	activeRequestsMutex sync.Mutex
 }
 
-type Request struct {
+type request struct {
 	cancel func()
 }
 
@@ -44,7 +44,7 @@ func NewConnection(in io.Reader, out io.Writer, requestHandler RequestHandler, n
 		requestHandler:      requestHandler,
 		notificationHandler: notificationHandler,
 		errorHandler:        errorHandler,
-		activeRequests:      map[string]*Request{},
+		activeRequests:      map[string]*request{},
 	}
 	return conn
 }
@@ -87,7 +87,7 @@ func (c *Connection) handleRequest(jsonData []byte) {
 		ctx, cancel := context.WithCancel(context.Background())
 
 		c.activeRequestsMutex.Lock()
-		c.activeRequests[id] = &Request{
+		c.activeRequests[id] = &request{
 			cancel: cancel,
 		}
 		c.activeRequestsMutex.Unlock()
