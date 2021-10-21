@@ -35,7 +35,7 @@ func (serv *Server) ErrorHandler(e error) {
 func (serv *Server) NotificationHandler(ctx context.Context, method string, params json.RawMessage) {
 }
 
-func (serv *Server) RequestHandler(ctx context.Context, method string, params json.RawMessage, respCallback func(json.RawMessage, error)) {
+func (serv *Server) RequestHandler(ctx context.Context, method string, params json.RawMessage, respCallback func(json.RawMessage, *jsonrpc.ResponseError)) {
 	switch method {
 	case "initialize":
 	default:

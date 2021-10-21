@@ -9,6 +9,7 @@ import (
 	"net/textproto"
 	"strconv"
 	"sync"
+	"sync/atomic"
 
 	"go.bug.st/json"
 )
@@ -24,14 +25,23 @@ type Connection struct {
 
 	activeInRequests      map[string]*request
 	activeInRequestsMutex sync.Mutex
+
+	activeOutRequests      map[string]chan<- *outRequest
+	activeOutRequestsMutex sync.Mutex
+	lastOutRequestsIndex   uint64
 }
 
 type request struct {
 	cancel func()
 }
 
+type outRequest struct {
+	reqResult json.RawMessage
+	reqError  *ResponseError
+}
+
 // RequestHandler handles requests from a jsonrpc Connection.
-type RequestHandler func(ctx context.Context, method string, params json.RawMessage, respCallback func(result json.RawMessage, err error))
+type RequestHandler func(ctx context.Context, method string, params json.RawMessage, respCallback func(result json.RawMessage, err *ResponseError))
 
 // NotificationHandler handles notifications from a jsonrpc Connection.
 type NotificationHandler func(ctx context.Context, method string, params json.RawMessage)
@@ -45,6 +55,7 @@ func NewConnection(in io.Reader, out io.Writer, requestHandler RequestHandler, n
 		notificationHandler: notificationHandler,
 		errorHandler:        errorHandler,
 		activeInRequests:    map[string]*request{},
+		activeOutRequests:   map[string]chan<- *outRequest{},
 	}
 	return conn
 }
@@ -82,19 +93,18 @@ func (c *Connection) Run() {
 
 func (c *Connection) handleIncomingData(jsonData []byte) {
 	var req RequestMessage
+	var notif NotificationMessage
+	var resp ResponseMessage
 	if err := json.Unmarshal(jsonData, &req); err == nil {
 		c.handleIncomingRequest(&req)
-		return
-	}
-
-	var notif NotificationMessage
-	if err := json.Unmarshal(jsonData, &notif); err == nil {
+	} else if err := json.Unmarshal(jsonData, &notif); err == nil {
 		c.handleIncomingNotification(&notif)
-		return
+	} else if err := json.Unmarshal(jsonData, &resp); err == nil {
+		c.handleIncomingResponse(&resp)
+	} else {
+		c.errorHandler(fmt.Errorf("invalid request: %s", string(jsonData)))
+		c.Close()
 	}
-
-	c.errorHandler(fmt.Errorf("invalid request: %s", string(jsonData)))
-	c.Close()
 }
 
 func (c *Connection) handleIncomingRequest(req *RequestMessage) {
@@ -107,30 +117,19 @@ func (c *Connection) handleIncomingRequest(req *RequestMessage) {
 	}
 	c.activeInRequestsMutex.Unlock()
 
-	c.requestHandler(ctx, req.Method, req.Params, func(result json.RawMessage, resultErr error) {
+	c.requestHandler(ctx, req.Method, req.Params, func(result json.RawMessage, resultErr *ResponseError) {
 		c.activeInRequestsMutex.Lock()
 		c.activeInRequests[id].cancel()
 		delete(c.activeInRequests, id)
 		c.activeInRequestsMutex.Unlock()
 
-		var resp interface{}
-		if resultErr != nil {
-			resp = &ResponseMessageError{
-				JSONRPC: "2.0",
-				ID:      req.ID,
-				Error: ResponseError{
-					Code:    1, // TODO... maybe resultErr must be a ResponseError?
-					Message: resultErr.Error(),
-				},
-			}
-		} else {
-			resp = &ResponseMessageSuccess{
-				JSONRPC: "2.0",
-				ID:      req.ID,
-				Result:  result,
-			}
+		resp := &ResponseMessage{
+			JSONRPC: "2.0",
+			ID:      req.ID,
+			Result:  result,
+			Error:   resultErr,
 		}
-		if sendErr := c.Send(resp); sendErr != nil {
+		if sendErr := c.send(resp); sendErr != nil {
 			c.errorHandler(fmt.Errorf("error sending response: %s", sendErr))
 			c.Close()
 		}
@@ -152,6 +151,31 @@ func (c *Connection) handleIncomingNotification(notif *NotificationMessage) {
 	c.notificationHandler(context.Background(), notif.Method, notif.Params)
 }
 
+func (c *Connection) handleIncomingResponse(req *ResponseMessage) {
+	var id string
+	if err := json.Unmarshal(req.ID, &id); err != nil {
+		c.errorHandler(fmt.Errorf("invalid ID in request response '%v': %w", req.ID, err))
+		c.Close()
+		return
+	}
+
+	c.activeOutRequestsMutex.Lock()
+	resultChan, ok := c.activeOutRequests[id]
+	c.activeOutRequestsMutex.Unlock()
+
+	if !ok {
+		c.errorHandler(fmt.Errorf("invalid ID in request response '%s': double answer or request not sent", id))
+		c.Close()
+		return
+	}
+
+	delete(c.activeOutRequests, id)
+	resultChan <- &outRequest{
+		reqResult: req.Result,
+		reqError:  req.Error,
+	}
+}
+
 func (c *Connection) cancelIncomingRequest(id json.RawMessage) {
 	c.activeInRequestsMutex.Lock()
 	if req, ok := c.activeInRequests[string(id)]; ok {
@@ -163,7 +187,62 @@ func (c *Connection) cancelIncomingRequest(id json.RawMessage) {
 func (c *Connection) Close() {
 }
 
-func (c *Connection) Send(data interface{}) error {
+func (c *Connection) SendRequest(method string, params json.RawMessage) (
+	cancel func(),
+	waitResult func() (json.RawMessage, *ResponseError),
+	sendRequestError error,
+) {
+	id := fmt.Sprintf("%d", atomic.AddUint64(&c.lastOutRequestsIndex, 1))
+	encodedId, err := json.Marshal(id)
+	if err != nil {
+		// should never happen...
+		panic("internal error creating RequestMessage")
+	}
+	req := RequestMessage{
+		JSONRPC: "2.0",
+		ID:      encodedId,
+		Method:  method,
+		Params:  params,
+	}
+
+	c.activeOutRequestsMutex.Lock()
+	defer c.activeOutRequestsMutex.Unlock()
+	if err := c.send(req); err != nil {
+		return nil, nil, fmt.Errorf("sending request: %w", err)
+	}
+	resultChan := make(chan *outRequest, 1)
+	c.activeOutRequests[id] = resultChan
+
+	// The following functions are returned (with named returns)
+	cancel = func() {
+		c.activeOutRequestsMutex.Lock()
+		_, active := c.activeOutRequests[id]
+		c.activeOutRequestsMutex.Unlock()
+		if active {
+			notif, _ := json.Marshal(CancelParams{ID: encodedId}) // can't fail
+			_ = c.SendNotification("$/cancelRequest", notif)      // ignore error (it won't matter anyway)
+		}
+	}
+	waitResult = func() (reqResult json.RawMessage, reqError *ResponseError) {
+		result := <-resultChan
+		return result.reqResult, result.reqError
+	}
+	return
+}
+
+func (c *Connection) SendNotification(method string, params json.RawMessage) error {
+	notif := NotificationMessage{
+		JSONRPC: "2.0",
+		Method:  method,
+		Params:  params,
+	}
+	if err := c.send(notif); err != nil {
+		return fmt.Errorf("sending notification: %w", err)
+	}
+	return nil
+}
+
+func (c *Connection) send(data interface{}) error {
 	buff, err := json.Marshal(data)
 	if err != nil {
 		return err

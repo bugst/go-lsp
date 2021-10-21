@@ -22,11 +22,11 @@ type RequestMessage struct {
 	Params json.RawMessage `json:"params,omitempty"`
 }
 
-// A ResponseMessageSuccess sent as a result of a request. If a request doesn’t provide a
+// A ResponseMessage sent as a result of a request. If a request doesn’t provide a
 // result value the receiver of a request still needs to return a response message
 // to conform to the JSON RPC specification. The result property of the ResponseMessageSuccess
 // should be set to null in this case to signal a successful request.
-type ResponseMessageSuccess struct {
+type ResponseMessage struct {
 	// The language server protocol always uses “2.0” as the jsonrpc version.
 	JSONRPC string `json:"jsonrpc,required"`
 
@@ -35,19 +35,13 @@ type ResponseMessageSuccess struct {
 
 	// The result of a request. This member is REQUIRED on success.
 	// This member MUST NOT exist if there was an error invoking the method.
-	Result json.RawMessage `json:"result,required"`
-}
-
-type ResponseMessageError struct {
-	// The language server protocol always uses “2.0” as the jsonrpc version.
-	JSONRPC string `json:"jsonrpc,required"`
-
-	// The request id.
-	ID json.RawMessage `json:"id,required"`
+	Result json.RawMessage `json:"result,omitempty"`
 
 	// The error object in case a request fails.
-	Error ResponseError `json:"error,required"`
+	Error *ResponseError `json:"error,omitempty"`
 }
+
+var NullResult json.RawMessage = []byte("null")
 
 // ResponseError is the error object in case a request fails.
 type ResponseError struct {

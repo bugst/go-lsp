@@ -133,7 +133,7 @@ func TestLSPInitializeMessages(t *testing.T) {
 	conn := jsonrpc.NewConnection(
 		bufio.NewReader(strings.NewReader(testdata)),
 		output,
-		func(ctx context.Context, method string, params json.RawMessage, respCallback func(json.RawMessage, error)) {
+		func(ctx context.Context, method string, params json.RawMessage, respCallback func(json.RawMessage, *jsonrpc.ResponseError)) {
 			require.Equal(t, "initialize", method)
 			var par InitializeParams
 			err := json.Unmarshal(params, &par)
