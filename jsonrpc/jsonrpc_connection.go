@@ -22,8 +22,8 @@ type Connection struct {
 	requestHandler      RequestHandler
 	notificationHandler NotificationHandler
 
-	activeRequests      map[string]*request
-	activeRequestsMutex sync.Mutex
+	activeInRequests      map[string]*request
+	activeInRequestsMutex sync.Mutex
 }
 
 type request struct {
@@ -44,7 +44,7 @@ func NewConnection(in io.Reader, out io.Writer, requestHandler RequestHandler, n
 		requestHandler:      requestHandler,
 		notificationHandler: notificationHandler,
 		errorHandler:        errorHandler,
-		activeRequests:      map[string]*request{},
+		activeInRequests:    map[string]*request{},
 	}
 	return conn
 }
@@ -86,17 +86,17 @@ func (c *Connection) handleRequest(jsonData []byte) {
 		id := string(req.ID)
 		ctx, cancel := context.WithCancel(context.Background())
 
-		c.activeRequestsMutex.Lock()
-		c.activeRequests[id] = &request{
+		c.activeInRequestsMutex.Lock()
+		c.activeInRequests[id] = &request{
 			cancel: cancel,
 		}
-		c.activeRequestsMutex.Unlock()
+		c.activeInRequestsMutex.Unlock()
 
 		c.requestHandler(ctx, req.Method, req.Params, func(result json.RawMessage, resultErr error) {
-			c.activeRequestsMutex.Lock()
-			c.activeRequests[id].cancel()
-			delete(c.activeRequests, id)
-			c.activeRequestsMutex.Unlock()
+			c.activeInRequestsMutex.Lock()
+			c.activeInRequests[id].cancel()
+			delete(c.activeInRequests, id)
+			c.activeInRequestsMutex.Unlock()
 
 			var resp interface{}
 			if resultErr != nil {
@@ -133,12 +133,12 @@ func (c *Connection) handleRequest(jsonData []byte) {
 				c.errorHandler(fmt.Errorf("invalid cancelRequest: %s", err))
 				return
 			}
-			c.activeRequestsMutex.Lock()
+			c.activeInRequestsMutex.Lock()
 			id := string(params.ID)
-			if req, ok := c.activeRequests[id]; ok {
+			if req, ok := c.activeInRequests[id]; ok {
 				req.cancel()
 			}
-			c.activeRequestsMutex.Unlock()
+			c.activeInRequestsMutex.Unlock()
 			return
 		}
 
