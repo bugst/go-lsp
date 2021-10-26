@@ -51,6 +51,9 @@ func DecodeRequestParams(method string, req json.RawMessage) (interface{}, error
 	case "workspace/executeCommand":
 		var res ExecuteCommandParams
 		return &res, json.Unmarshal(req, &res)
+	case "window/showMessageRequest":
+		var res ShowMessageRequestParams
+		return &res, json.Unmarshal(req, &res)
 	}
 	return nil, nil
 }
@@ -74,6 +77,9 @@ func DecodeNotificationParams(method string, req json.RawMessage) (interface{}, 
 		return &res, json.Unmarshal(req, &res)
 	case "workspace/didChangeWatchedFiles":
 		var res DidChangeWatchedFilesParams
+		return &res, json.Unmarshal(req, &res)
+	case "window/showMessage":
+		var res ShowMessageParams
 		return &res, json.Unmarshal(req, &res)
 	}
 	return nil, nil

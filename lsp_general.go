@@ -134,8 +134,3 @@ type SetTraceParams struct {
 	// The new value that should be assigned to the trace setting.
 	Value TraceValue `json:"value,required"`
 }
-
-type MessageActionItem struct {
-	// A short title like 'Retry', 'Open Log' etc.
-	Title string `json:"title,required"`
-}
