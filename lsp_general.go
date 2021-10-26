@@ -40,14 +40,14 @@ type InitializeParams struct {
 	// if no folder is open.
 	//
 	// @deprecated in favour of `rootUri`.
-	RootPath *string `json:"rootPath,omitempty"`
+	RootPath string `json:"rootPath,omitempty"`
 
 	// The rootUri of the workspace. Is null if no
 	// folder is open. If both `rootPath` and `rootUri` are set
 	// `rootUri` wins.
 	//
 	// @deprecated in favour of `workspaceFolders`
-	RootURI *DocumentURI `json:"rootUri,required"`
+	RootURI DocumentURI `json:"rootUri,required"`
 
 	// User provided initialization options.
 	InitializationOptions json.RawMessage `json:"initializationOptions,omitempty"`
@@ -133,4 +133,9 @@ type LogTraceParams struct {
 type SetTraceParams struct {
 	// The new value that should be assigned to the trace setting.
 	Value TraceValue `json:"value,required"`
+}
+
+type MessageActionItem struct {
+	// A short title like 'Retry', 'Open Log' etc.
+	Title string `json:"title,required"`
 }
