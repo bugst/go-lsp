@@ -1140,22 +1140,6 @@ type PrepareSupportDefaultBehavior int
 // according the to language's syntax rule.
 const PrepareSupportDefaultBehaviorIdentifier = 1
 
-// The diagnostic tags.
-//
-// @since 3.15.0
-type DiagnosticTag int
-
-// Unused or unnecessary code.
-//
-// Clients are allowed to render diagnostics with this tag faded out
-// instead of having an error squiggle.
-const DiagnosticTagUnnecessary DiagnosticTag = 1
-
-// Deprecated or obsolete code.
-//
-// Clients are allowed to rendered diagnostics with this tag strike through.
-const DiagnosticTagDeprecated DiagnosticTag = 2
-
 type TokenFormat string
 
 const TokenFormatRelative TokenFormat = "relative"

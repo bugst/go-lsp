@@ -81,6 +81,9 @@ func DecodeNotificationParams(method string, req json.RawMessage) (interface{}, 
 	case "window/showMessage":
 		var res ShowMessageParams
 		return &res, json.Unmarshal(req, &res)
+	case "textDocument/publishDiagnostics":
+		var res PublishDiagnosticsParams
+		return &res, json.Unmarshal(req, &res)
 	}
 	return nil, nil
 }

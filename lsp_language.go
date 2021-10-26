@@ -83,77 +83,12 @@ type CodeActionContext struct {
 	Only []CodeActionKind `json:"only,omitempty"`
 }
 
-type Diagnostic struct {
-	// The range at which the message applies.
-	Range Range `json:"range,required"`
-
-	// The diagnostic's severity. Can be omitted. If omitted it is up to the
-	// client to interpret diagnostics as error, warning, info or hint.
-	Severity *DiagnosticSeverity `json:"severity,omitempty"`
-
-	// The diagnostic's code, which might appear in the user interface.
-	Code json.RawMessage `json:"code,omitempty"`
-
-	// An optional property to describe the error code.
-	//
-	// @since 3.16.0
-	CodeDescription *CodeDescription `json:"codeDescription,omitempty"`
-
-	// A human-readable string describing the source of this
-	// diagnostic, e.g. 'typescript' or 'super lint'.
-	Source string `json:"source,omitempty"`
-
-	// The diagnostic's message.
-	Message string `json:"message,required"`
-
-	// Additional metadata about the diagnostic.
-	//
-	// @since 3.15.0
-	Tags []DiagnosticTag `json:"tags,omitempty"`
-
-	// An array of related diagnostic information, e.g. when symbol-names within
-	// a scope collide all definitions can be marked via this property.
-	RelatedInformation []DiagnosticRelatedInformation `json:"relatedInformation,omitempty"`
-
-	// A data entry field that is preserved between a
-	// `textDocument/publishDiagnostics` notification and
-	// `textDocument/codeAction` request.
-	//
-	// @since 3.16.0
-	Data json.RawMessage `json:"data,omitempty"`
-}
-
-type DiagnosticSeverity int
-
-// Reports an error.
-const DiagnosticSeverityError DiagnosticSeverity = 1
-
-// Reports a warning.
-const DiagnosticSeverityWarning DiagnosticSeverity = 2
-
-// Reports an information.
-const DiagnosticSeverityInformation DiagnosticSeverity = 3
-
-// Reports a hint.
-const DiagnosticSeverityHint DiagnosticSeverity = 4
-
 // Structure to capture a description for an error code.
 //
 // @since 3.16.0
 type CodeDescription struct {
 	// An URI to open with more information about the diagnostic error.
 	Href URI `json:"href,required"`
-}
-
-// Represents a related message and source code location for a diagnostic.
-// This should be used to point to code locations that cause or are related to
-// a diagnostics, e.g when duplicating a symbol in a scope.
-type DiagnosticRelatedInformation struct {
-	// The location of this related diagnostic information.
-	Location Location `json:"location,required"`
-
-	// The message of this related diagnostic information.
-	Message string `json:"message,required"`
 }
 
 type HoverParams struct {
@@ -604,7 +539,7 @@ type Command struct {
 
 	// Arguments that the command handler should be
 	// invoked with.
-	Arguments []interface{} `json:"arguments,omitempty"`
+	Arguments []json.RawMessage `json:"arguments,omitempty"`
 }
 
 // A code action represents a change that can be performed in code, e.g. to fix
@@ -680,6 +615,7 @@ type WorkspaceEdit struct {
 	// Holds changes to existing resources.
 
 	// changes?: { [uri: DocumentUri]: TextEdit[]; };
+	Changes map[DocumentURI][]TextEdit `json:"changes,omitempty"` // TODO: I don't think this is correct at all
 
 	// Depending on the client capability
 	// `workspace.workspaceEdit.resourceOperations` document changes are either
