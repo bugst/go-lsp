@@ -54,6 +54,9 @@ func DecodeRequestParams(method string, req json.RawMessage) (interface{}, error
 	case "window/showMessageRequest":
 		var res ShowMessageRequestParams
 		return &res, json.Unmarshal(req, &res)
+	case "window/workDoneProgress/create":
+		var res WorkDoneProgressCreateParams
+		return &res, json.Unmarshal(req, &res)
 	}
 	return nil, nil
 }
@@ -83,6 +86,9 @@ func DecodeNotificationParams(method string, req json.RawMessage) (interface{}, 
 		return &res, json.Unmarshal(req, &res)
 	case "textDocument/publishDiagnostics":
 		var res PublishDiagnosticsParams
+		return &res, json.Unmarshal(req, &res)
+	case "$/progress":
+		var res ProgressParams
 		return &res, json.Unmarshal(req, &res)
 	}
 	return nil, nil
