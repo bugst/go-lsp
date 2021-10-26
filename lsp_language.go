@@ -215,7 +215,7 @@ type DocumentRangeFormattingParams struct {
 	*WorkDoneProgressParams
 
 	// The document to format.
-	TextDocument *TextDocumentIdentifier `json:"textDocument,required"`
+	TextDocument TextDocumentIdentifier `json:"textDocument,required"`
 
 	// The range to format
 	Range Range `json:"range,required"`

@@ -2,7 +2,7 @@ package lsp
 
 type DidOpenTextDocumentParams struct {
 	// The document that was opened.
-	TextDocument *TextDocumentItem `json:"textDocument,required"`
+	TextDocument TextDocumentItem `json:"textDocument,required"`
 }
 
 type DidCloseTextDocumentParams struct {
@@ -67,7 +67,7 @@ type TextDocumentItem struct {
 	URI DocumentURI `json:"uri,required"`
 
 	// The text document's language identifier.
-	LanguageId string `json:"languageId,required"`
+	LanguageID string `json:"languageId,required"`
 
 	// The version number of this document (it will increase after each
 	// change, including undo/redo).
