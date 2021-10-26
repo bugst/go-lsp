@@ -111,14 +111,10 @@ func DecodeResponseResult(method string, resp json.RawMessage) (interface{}, err
 	case "textDocument/codeAction":
 		// result: (Command | CodeAction)[] | null
 		if string(resp) == "null" {
-			return []Command{}, nil
+			return []CommandOrCodeAction{}, nil
 		}
-		var resCommands []Command
-		if err := json.Unmarshal(resp, &resCommands); err == nil {
-			return &resCommands, nil
-		}
-		var resCodeActions []CodeAction
-		return &resCodeActions, json.Unmarshal(resp, &resCodeActions)
+		var res []CommandOrCodeAction
+		return res, json.Unmarshal(resp, &res)
 	case "completionItem/resolve":
 		var res CompletionItem
 		return &res, json.Unmarshal(resp, &res)
