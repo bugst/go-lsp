@@ -1,6 +1,8 @@
 package jsonrpc
 
 import (
+	"fmt"
+
 	"go.bug.st/json"
 )
 
@@ -54,6 +56,13 @@ type ResponseError struct {
 	// A primitive or structured value that contains additional
 	// information about the error. Can be omitted.
 	Data json.RawMessage `json:"data,omitempty"`
+}
+
+func (r *ResponseError) AsError() error {
+	if r.Message == "" {
+		return fmt.Errorf("error code: %d", r.Code)
+	}
+	return fmt.Errorf("%d %s", r.Code, r.Message)
 }
 
 type ErrorCode int
