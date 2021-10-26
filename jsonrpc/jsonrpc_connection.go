@@ -187,11 +187,7 @@ func (c *Connection) cancelIncomingRequest(id json.RawMessage) {
 func (c *Connection) Close() {
 }
 
-func (c *Connection) SendRequest(method string, params json.RawMessage) (
-	cancel func(),
-	waitResult func() (json.RawMessage, *ResponseError),
-	sendRequestError error,
-) {
+func (c *Connection) SendRequest(ctx context.Context, method string, params json.RawMessage) (json.RawMessage, *ResponseError, error) {
 	id := fmt.Sprintf("%d", atomic.AddUint64(&c.lastOutRequestsIndex, 1))
 	encodedId, err := json.Marshal(id)
 	if err != nil {
@@ -205,29 +201,37 @@ func (c *Connection) SendRequest(method string, params json.RawMessage) (
 		Params:  params,
 	}
 
+	resultChan := make(chan *outRequest, 1)
 	c.activeOutRequestsMutex.Lock()
-	defer c.activeOutRequestsMutex.Unlock()
-	if err := c.send(req); err != nil {
+	err = c.send(req)
+	if err == nil {
+		c.activeOutRequests[id] = resultChan
+	}
+	c.activeOutRequestsMutex.Unlock()
+	if err != nil {
 		return nil, nil, fmt.Errorf("sending request: %w", err)
 	}
-	resultChan := make(chan *outRequest, 1)
-	c.activeOutRequests[id] = resultChan
 
-	// The following functions are returned (with named returns)
-	cancel = func() {
+	// Wait the response or send cancel request if requested from context
+	select {
+	case <-ctx.Done():
 		c.activeOutRequestsMutex.Lock()
 		_, active := c.activeOutRequests[id]
 		c.activeOutRequestsMutex.Unlock()
 		if active {
-			notif, _ := json.Marshal(CancelParams{ID: encodedId}) // can't fail
-			_ = c.SendNotification("$/cancelRequest", notif)      // ignore error (it won't matter anyway)
+			if notif, err := json.Marshal(CancelParams{ID: encodedId}); err != nil {
+				// should never happen
+				panic("internal error: failed json encoding")
+			} else {
+				_ = c.SendNotification("$/cancelRequest", notif) // ignore error (it won't matter anyway)
+			}
 		}
+	case result := <-resultChan:
+		return result.reqResult, result.reqError, nil
 	}
-	waitResult = func() (reqResult json.RawMessage, reqError *ResponseError) {
-		result := <-resultChan
-		return result.reqResult, result.reqError
-	}
-	return
+
+	result := <-resultChan
+	return result.reqResult, result.reqError, nil
 }
 
 func (c *Connection) SendNotification(method string, params json.RawMessage) error {

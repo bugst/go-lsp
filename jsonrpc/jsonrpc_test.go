@@ -16,6 +16,12 @@ import (
 )
 
 func TestRPCConnection(t *testing.T) {
+	notifData := `
+{
+	"jsonrpc": "2.0",
+	"method": "initialized",
+	"params": [123]
+}`
 	reqData := `
 {
 	"jsonrpc": "2.0",
@@ -46,12 +52,6 @@ func TestRPCConnection(t *testing.T) {
 	"method": "$/cancelRequest",
 	"params": { "id":3 }
 }`
-	notifData := `
-{
-	"jsonrpc": "2.0",
-	"method": "initialized",
-	"params": [123]
-}`
 	simulatedResult := `
 {
 	"jsonrpc": "2.0",
@@ -71,12 +71,15 @@ func TestRPCConnection(t *testing.T) {
 		bufio.NewReader(strings.NewReader(testdata)),
 		output,
 		func(ctx context.Context, method string, params json.RawMessage, respCallback func(result json.RawMessage, err *ResponseError)) {
-			resp += fmt.Sprintf("REQ method=%v params=%v\n", method, params)
+			log := fmt.Sprintf("REQ method=%v params=%v", method, params)
+			t.Log(log)
+			resp += log + "\n"
 			if method == "tocancel" {
 				wg.Add(1)
 				go func() {
 					select {
 					case <-ctx.Done():
+						t.Log("Request has been correclty canceled")
 					case <-time.After(time.Second):
 						t.Log("Request has not been canceled!")
 						t.Fail()
@@ -89,7 +92,9 @@ func TestRPCConnection(t *testing.T) {
 			respCallback(NullResult, nil)
 		},
 		func(ctx context.Context, method string, params json.RawMessage) {
-			resp += fmt.Sprintf("NOT method=%v params=%v\n", method, params)
+			log := fmt.Sprintf("NOT method=%v params=%v", method, params)
+			t.Log(log)
+			resp += log + "\n"
 		},
 		func(e error) {
 			if e == io.EOF {
@@ -98,18 +103,20 @@ func TestRPCConnection(t *testing.T) {
 			resp += fmt.Sprintf("error=%s\n", e)
 		},
 	)
+
 	msg, err := json.Marshal(struct{ Field bool }{true})
 	require.NoError(t, err)
-	cancel, wait, err := conn.SendRequest("helloworld", msg)
-	require.NoError(t, err)
-	cancel() // send cancel (will be catched later)
-
-	conn.Run()                 // Exits when input is fully consumed
-	respRes, respErr := wait() // Wait response to request
-	require.Nil(t, respErr)
-	require.Equal(t, "{\"fakedata\":999}", string(respRes))
-
-	wg.Wait() // Wait for all pending responses to get through
+	ctx, cancel := context.WithCancel(context.Background())
+	go func() {
+		respRes, respErr, err := conn.SendRequest(ctx, "helloworld", msg)
+		require.NoError(t, err)
+		require.Nil(t, respErr)
+		require.Equal(t, "{\"fakedata\":999}", string(respRes))
+	}()
+	cancel()
+	time.Sleep(100 * time.Millisecond)
+	conn.Run() // Exits when input is fully consumed
+	wg.Wait()  // Wait for all pending responses to get through
 	conn.Close()
 	require.Equal(t,
 		"NOT method=initialized params=[91 49 50 51 93]\n"+
