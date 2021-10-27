@@ -57,6 +57,9 @@ func DecodeRequestParams(method string, req json.RawMessage) (interface{}, error
 	case "window/workDoneProgress/create":
 		var res WorkDoneProgressCreateParams
 		return &res, json.Unmarshal(req, &res)
+	case "workspace/applyEdit":
+		var res ApplyWorkspaceEditParams
+		return &res, json.Unmarshal(req, &res)
 	}
 	return nil, nil
 }

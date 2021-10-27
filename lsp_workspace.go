@@ -24,6 +24,16 @@ type ExecuteCommandParams struct {
 	Arguments []interface{} `json:"arguments,required"`
 }
 
+type ApplyWorkspaceEditParams struct {
+	// An optional label of the workspace edit. This label is
+	// presented in the user interface for example on an undo
+	// stack to undo the workspace edit.
+	Label string `json:"label,required"`
+
+	// The edits to apply.
+	Edit WorkspaceEdit `json:"edit,required"`
+}
+
 type ApplyWorkspaceEditResult struct {
 	// Indicates whether the edit was applied or not.
 	Applied bool `json:"applied,required"`
