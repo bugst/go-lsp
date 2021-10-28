@@ -1,7 +1,7 @@
 package lsp
 
 import (
-	"encoding/json"
+	"go.bug.st/json"
 )
 
 type CompletionParams struct {

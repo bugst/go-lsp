@@ -1,6 +1,10 @@
 package lsp
 
-import "encoding/json"
+import (
+	"fmt"
+
+	"go.bug.st/json"
+)
 
 // ClientCapabilities Workspace specific client capabilities.
 type ClientCapabilities struct {
@@ -273,6 +277,65 @@ const SymbolKindStruct SymbolKind = 23
 const SymbolKindEvent SymbolKind = 24
 const SymbolKindOperator SymbolKind = 25
 const SymbolKindTypeParameter SymbolKind = 26
+
+func (s SymbolKind) String() string {
+	switch s {
+	case SymbolKindFile:
+		return "SymbolKind:File"
+	case SymbolKindModule:
+		return "SymbolKind:Module"
+	case SymbolKindNamespace:
+		return "SymbolKind:Namespace"
+	case SymbolKindPackage:
+		return "SymbolKind:Package"
+	case SymbolKindClass:
+		return "SymbolKind:Class"
+	case SymbolKindMethod:
+		return "SymbolKind:Method"
+	case SymbolKindProperty:
+		return "SymbolKind:Property"
+	case SymbolKindField:
+		return "SymbolKind:Field"
+	case SymbolKindConstructor:
+		return "SymbolKind:Constructor"
+	case SymbolKindEnum:
+		return "SymbolKind:Enum"
+	case SymbolKindInterface:
+		return "SymbolKind:Interface"
+	case SymbolKindFunction:
+		return "SymbolKind:Function"
+	case SymbolKindVariable:
+		return "SymbolKind:Variable"
+	case SymbolKindConstant:
+		return "SymbolKind:Constant"
+	case SymbolKindString:
+		return "SymbolKind:String"
+	case SymbolKindNumber:
+		return "SymbolKind:Number"
+	case SymbolKindBoolean:
+		return "SymbolKind:Boolean"
+	case SymbolKindArray:
+		return "SymbolKind:Array"
+	case SymbolKindObject:
+		return "SymbolKind:Object"
+	case SymbolKindKey:
+		return "SymbolKind:Key"
+	case SymbolKindNull:
+		return "SymbolKind:Null"
+	case SymbolKindEnumMember:
+		return "SymbolKind:EnumMember"
+	case SymbolKindStruct:
+		return "SymbolKind:Struct"
+	case SymbolKindEvent:
+		return "SymbolKind:Event"
+	case SymbolKindOperator:
+		return "SymbolKind:Operator"
+	case SymbolKindTypeParameter:
+		return "SymbolKind:TypeParameter"
+	default:
+		return fmt.Sprintf("SymbolKind:%d", s)
+	}
+}
 
 type SymbolTag int
 

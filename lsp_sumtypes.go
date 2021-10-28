@@ -1,8 +1,9 @@
 package lsp
 
 import (
-	"encoding/json"
 	"errors"
+
+	"go.bug.st/json"
 )
 
 type CommandOrCodeAction struct {

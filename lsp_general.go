@@ -1,8 +1,7 @@
 package lsp
 
 import (
-	"encoding/json"
-
+	"go.bug.st/json"
 	"go.bug.st/lsp/jsonrpc"
 )
 

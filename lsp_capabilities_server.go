@@ -1,8 +1,9 @@
 package lsp
 
 import (
-	"encoding/json"
 	"fmt"
+
+	"go.bug.st/json"
 )
 
 type ServerCapabilities struct {
@@ -801,14 +802,30 @@ type SemanticTokensOptions struct {
 
 	// Server supports providing semantic tokens for a specific range
 	// of a document.
-	Range *struct {
-	} `json:"range,omitempty"`
+	// type: boolean | { }
+	Range *BooleanOrEmptyStruct `json:"range,omitempty"`
 
 	// Server supports providing semantic tokens for a full document.
+	// type: boolean | { delta?: boolean }
 	Full *struct {
 		// The server supports deltas for full documents.
 		Delta bool `json:"delta,omitempty"`
 	} `json:"full,omitempty"`
+}
+
+type BooleanOrEmptyStruct bool
+
+func (x *BooleanOrEmptyStruct) UnmarshalJSON(data []byte) error {
+	var s struct{}
+	if err := json.Unmarshal(data, &s); err == nil {
+		*x = true
+		return nil
+	}
+	var b bool
+	err := json.Unmarshal(data, &b)
+	*x = BooleanOrEmptyStruct(b)
+	return err
+
 }
 
 type SemanticTokensRegistrationOptions struct {
@@ -857,27 +874,27 @@ type WorkspaceSymbolOptions struct {
 	*WorkDoneProgressOptions
 }
 
-// boolean | WorkspaceSymbolOptions where WorkspaceSymbolOptions is defined as follows:
 type WorkspaceSymbolRegistrationOptions struct {
 	*WorkspaceSymbolOptions
 }
 
-func (s *WorkspaceSymbolRegistrationOptions) UnmarshalJSON(data []byte) error {
+// boolean | WorkspaceSymbolOptions where WorkspaceSymbolOptions is defined as follows:
+func (s *WorkspaceSymbolOptions) UnmarshalJSON(data []byte) error {
 	save := false
 	if err := json.Unmarshal(data, &save); err == nil {
 		if save {
-			*s = WorkspaceSymbolRegistrationOptions{}
+			*s = WorkspaceSymbolOptions{}
 		}
 		return nil
 	}
 
-	type __ WorkspaceSymbolRegistrationOptions // avoid loops
+	type __ WorkspaceSymbolOptions // avoid loops
 	var res __
 	if err := json.Unmarshal(data, &res); err == nil {
-		*s = WorkspaceSymbolRegistrationOptions(res)
+		*s = WorkspaceSymbolOptions(res)
 		return nil
 	}
-	return fmt.Errorf("expected boolean or WorkspaceSymbolRegistrationOptions")
+	return fmt.Errorf("expected boolean or WorkspaceSymbolOptions")
 }
 
 type WorkspaceFoldersServerCapabilities struct {
