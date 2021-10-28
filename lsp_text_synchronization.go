@@ -95,3 +95,25 @@ type RenameParams struct {
 	// appropriate message set.
 	NewName string `json:"newName,required"`
 }
+
+// The parameters send in a will save text document notification.
+type WillSaveTextDocumentParams struct {
+	// The document that will be saved.
+	RextDocument TextDocumentIdentifier `json:"textDocument,required"`
+
+	// The 'TextDocumentSaveReason'.
+	Reason TextDocumentSaveReason `json:"reason,required"`
+}
+
+// Represents reasons why a text document is saved.
+type TextDocumentSaveReason int
+
+// Manually triggered, e.g. by the user pressing save, by starting
+// debugging, or by an API call.
+const TextDocumentSaveReasonManual TextDocumentSaveReason = 1
+
+// Automatic after a delay.
+const TextDocumentSaveReasonAfterDelay TextDocumentSaveReason = 2
+
+// When the editor lost focus.
+const TextDocumentSaveReasonFocusOut TextDocumentSaveReason = 3

@@ -1,5 +1,7 @@
 package lsp
 
+import "encoding/json"
+
 type DidChangeWatchedFilesParams struct {
 	// The actual file events.
 	Changes []FileEvent `json:"changes,required"`
@@ -48,4 +50,23 @@ type ApplyWorkspaceEditResult struct {
 	// only available if the client signals a `failureHandling` strategy
 	// in its client capabilities.
 	FailedChange int `json:"failedChange,omitempty"`
+}
+
+type DidChangeWorkspaceFoldersParams struct {
+	// The actual workspace folder change event.
+	Event WorkspaceFoldersChangeEvent `json:"event,required"`
+}
+
+// The workspace folder change event.
+type WorkspaceFoldersChangeEvent struct {
+	// The array of added workspace folders
+	Added []WorkspaceFolder `json:"added,required"`
+
+	// The array of the removed workspace folders
+	Eemoved []WorkspaceFolder `json:"removed,required"`
+}
+
+type DidChangeConfigurationParams struct {
+	// The actual changed settings
+	Settings json.RawMessage `json:"settings,required"`
 }

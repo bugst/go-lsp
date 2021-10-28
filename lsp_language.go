@@ -310,6 +310,12 @@ type DocumentHighlightParams struct {
 	*PartialResultParams
 }
 
+type DeclarationParams struct {
+	*TextDocumentPositionParams
+	*WorkDoneProgressParams
+	*PartialResultParams
+}
+
 type ReferenceParams struct {
 	TextDocumentPositionParams
 	*WorkDoneProgressParams
@@ -828,4 +834,365 @@ type SymbolInformation struct {
 	// if necessary). It can't be used to re-infer a hierarchy for the document
 	// symbols.
 	ContainerName string `json:"containerName,omitempty"`
+}
+
+// The parameters of a Workspace Symbol Request.
+type WorkspaceSymbolParams struct {
+	*WorkDoneProgressParams
+	*PartialResultParams
+
+	// A query string to filter symbols by. Clients may send an empty
+	// string here to request all symbols.
+	Query string `json:"query,required"`
+}
+
+// The parameters sent in notifications/requests for user-initiated creation
+// of files.
+//
+// @since 3.16.0
+type CreateFilesParams struct {
+	// An array of all files/folders created in this operation.
+	Files []FileCreate `json:"files,required"`
+}
+
+// Represents information on a file/folder create.
+//
+// @since 3.16.0
+type FileCreate struct {
+	// A file:// URI for the location of the file/folder being created.
+	URI string `json:"uri,required"`
+}
+
+// The parameters sent in notifications/requests for user-initiated renames
+// of files.
+//
+// @since 3.16.0
+type RenameFilesParams struct {
+	// An array of all files/folders renamed in this operation. When a folder
+	// is renamed, only the folder will be included, and not its children.
+	Files []FileRename `json:"files,required"`
+}
+
+// Represents information on a file/folder rename.
+//
+// @since 3.16.0
+type FileRename struct {
+	// A file:// URI for the original location of the file/folder being renamed.
+	OldUri string `json:"oldUri,required"`
+
+	// A file:// URI for the new location of the file/folder being renamed.
+	NewUri string `json:"newUri,required"`
+}
+
+// The parameters sent in notifications/requests for user-initiated deletes
+// of files.
+//
+// @since 3.16.0
+type DeleteFilesParams struct {
+	// An array of all files/folders deleted in this operation.
+	Files []FileDelete `json:"files,required"`
+}
+
+// Represents information on a file/folder delete.
+//
+// @since 3.16.0
+type FileDelete struct {
+	// A file:// URI for the location of the file/folder being deleted.
+	Uri string `json:"uri,required"`
+}
+
+type CodeLensParams struct {
+	*WorkDoneProgressParams
+	*PartialResultParams
+
+	// The document to request code lens for.
+	TextDocument TextDocumentIdentifier `json:"textDocument,required"`
+}
+
+// A code lens represents a command that should be shown along with
+// source text, like the number of references, a way to run tests, etc.
+//
+// A code lens is _unresolved_ when no command is associated to it. For
+// performance reasons the creation of a code lens and resolving should be done
+// in two stages.
+type CodeLens struct {
+	// The range in which this code lens is valid. Should only span a single
+	// line.
+	Range Range `json:"range,required"`
+
+	// The command this code lens represents.
+	Command *Command `json:"command,omitempty"`
+
+	// A data entry field that is preserved on a code lens item between
+	// a code lens and a code lens resolve request.
+	Data json.RawMessage `json:"data,omitempty"`
+}
+
+type PrepareRenameParams struct {
+	TextDocumentPositionParams
+}
+
+type FoldingRangeParams struct {
+	*WorkDoneProgressParams
+	*PartialResultParams
+
+	// The text document.
+	RextDocument TextDocumentIdentifier `json:"textDocument,required"`
+}
+
+// Enum of known range kinds
+type FoldingRangeKind string
+
+// Folding range for a comment
+const FoldingRangeKindComment FoldingRangeKind = "comment"
+
+// Folding range for a imports or includes
+const FoldingRangeKindImports FoldingRangeKind = "imports"
+
+// Folding range for a region (e.g. `#region`)
+const FoldingRangeKindRegion FoldingRangeKind = "region"
+
+// Represents a folding range. To be valid, start and end line must be bigger
+// than zero and smaller than the number of lines in the document. Clients
+// are free to ignore invalid ranges.
+type FoldingRange struct {
+
+	// The zero-based start line of the range to fold. The folded area starts
+	// after the line's last character. To be valid, the end must be zero or
+	// larger and smaller than the number of lines in the document.
+	StartLine int `json:"startLine,required"`
+
+	// The zero-based character offset from where the folded range starts. If
+	// not defined, defaults to the length of the start line.
+	StartCharacter *int `json:"startCharacter,omitempty"`
+
+	// The zero-based end line of the range to fold. The folded area ends with
+	// the line's last character. To be valid, the end must be zero or larger
+	// and smaller than the number of lines in the document.
+	EndLine int `json:"endLine,required"`
+
+	// The zero-based character offset before the folded range ends. If not
+	// defined, defaults to the length of the end line.
+	EndCharacter *int `json:"endCharacter,omitempty"`
+
+	// Describes the kind of the folding range such as `comment` or `region`.
+	// The kind is used to categorize folding ranges and used by commands like
+	// 'Fold all comments'. See [FoldingRangeKind](#FoldingRangeKind) for an
+	// enumeration of standardized kinds.
+	Kind string `json:"kind,omitempty"`
+}
+
+type SelectionRangeParams struct {
+	WorkDoneProgressParams
+	PartialResultParams
+
+	// The text document.
+	RextDocument TextDocumentIdentifier `json:"textDocument,required"`
+
+	// The positions inside the text document.
+	Positions []Position `json:"positions,required"`
+}
+
+type SelectionRange struct {
+	// The [range](#Range) of this selection range.
+	Range Range `json:"range,required"`
+	// The parent selection range containing this range. Therefore
+	// `parent.range` must contain `this.range`.
+	Parent *SelectionRange `json:"parent,omitempty"`
+}
+
+type CallHierarchyPrepareParams struct {
+	TextDocumentPositionParams
+	WorkDoneProgressParams
+}
+
+type CallHierarchyItem struct {
+	// The name of this item.
+	Name string `json:"name,required"`
+
+	// The kind of this item.
+	Kind SymbolKind `json:"kind,required"`
+
+	// Tags for this item.
+	Tags []SymbolTag `json:"tags,omitempty"`
+
+	// More detail for this item, e.g. the signature of a function.
+	Detail string `json:"detail,omitempty"`
+
+	// The resource identifier of this item.
+	URI DocumentURI `json:"uri,required"`
+
+	// The range enclosing this symbol not including leading/trailing whitespace
+	// but everything else, e.g. comments and code.
+	Range Range `json:"range,required"`
+
+	// The range that should be selected and revealed when this symbol is being
+	// picked, e.g. the name of a function. Must be contained by the
+	// [`range`](#CallHierarchyItem.range).
+	SelectionRange Range `json:"selectionRange,required"`
+
+	// A data entry field that is preserved between a call hierarchy prepare and
+	// incoming calls or outgoing calls requests.
+	Data json.RawMessage `json:"data,omitempty"`
+}
+
+type CallHierarchyIncomingCallsParams struct {
+	WorkDoneProgressParams
+	PartialResultParams
+
+	Item CallHierarchyItem `json:"item,required"`
+}
+
+type CallHierarchyIncomingCall struct {
+
+	// The item that makes the call.
+	From CallHierarchyItem `json:"from,required"`
+
+	// The ranges at which the calls appear. This is relative to the caller
+	// denoted by [`this.from`](#CallHierarchyIncomingCall.from).
+	FromRanges []Range `json:"fromRanges,required"`
+}
+
+type CallHierarchyOutgoingCallsParams struct {
+	*WorkDoneProgressParams
+	*PartialResultParams
+
+	Item CallHierarchyItem `json:"item,required"`
+}
+
+type CallHierarchyOutgoingCall struct {
+	// The item that is called.
+	Ro CallHierarchyItem `json:"to,required"`
+
+	// The range at which this item is called. This is the range relative to
+	// the caller, e.g the item passed to `callHierarchy/outgoingCalls` request.
+	FromRanges []Range `json:"fromRanges,required"`
+}
+
+type SemanticTokensParams struct {
+	*WorkDoneProgressParams
+	*PartialResultParams
+	// The text document.
+	textDocument TextDocumentIdentifier `json:"textDocument,required"`
+}
+
+type SemanticTokens struct {
+	// An optional result id. If provided and clients support delta updating
+	// the client will include the result id in the next semantic token request.
+	// A server can then instead of computing all semantic tokens again simply
+	// send a delta.
+	ResultID string `json:"resultId,omitemty"`
+
+	// The actual tokens.
+	Data []int `json:"data,required"`
+}
+
+type SemanticTokensDeltaParams struct {
+	*WorkDoneProgressParams
+	*PartialResultParams
+
+	// The text document.
+	RextDocument TextDocumentIdentifier `json:"textDocument,required"`
+
+	// The result id of a previous response. The result Id can either point to
+	// a full response or a delta response depending on what was received last.
+	PreviousResultID string `json:"previousResultId,required"`
+}
+
+type SemanticTokensDelta struct {
+	ResultID string `json:"resultId,omitemty"`
+
+	// The semantic token edits to transform a previous result into a new
+	// result.
+	Edits []SemanticTokensEdit `json:"edits,required"`
+}
+
+type SemanticTokensEdit struct {
+	// The start offset of the edit.
+	Start int `json:"start,required"`
+
+	// The count of elements to remove.
+	DeleteCount int `json:"deleteCount,required"`
+
+	// The elements to insert.
+	Data []int `json:"data,omitemty"`
+}
+
+type SemanticTokensRangeParams struct {
+	*WorkDoneProgressParams
+	*PartialResultParams
+	// The text document.
+	TextDocument TextDocumentIdentifier `json:"textDocument,required"`
+
+	// The range the semantic tokens are requested for.
+	Range Range `json:"range,required"`
+}
+
+type LinkedEditingRangeParams struct {
+	*TextDocumentPositionParams
+	*WorkDoneProgressParams
+}
+
+type LinkedEditingRanges struct {
+	// A list of ranges that can be renamed together. The ranges must have
+	// identical length and contain identical text content. The ranges cannot overlap.
+	Ranges []Range `json:"ranges,required"`
+
+	// An optional word pattern (regular expression) that describes valid contents for
+	// the given ranges. If no pattern is provided, the client configuration's word
+	// pattern will be used.
+	WordPattern string `json:"wordPattern,omitemty"`
+}
+
+type MonikerParams struct {
+	*TextDocumentPositionParams
+	*WorkDoneProgressParams
+	*PartialResultParams
+}
+
+// Moniker uniqueness level to define scope of the moniker.
+type UniquenessLevel string
+
+// The moniker is only unique inside a document
+const UniquenessLevelDocument UniquenessLevel = "document"
+
+// The moniker is unique inside a project for which a dump got created
+const UniquenessLevelProject UniquenessLevel = "project"
+
+// The moniker is unique inside the group to which a project belongs
+const UniquenessLevelGroup UniquenessLevel = "group"
+
+// The moniker is unique inside the moniker scheme.
+const UniquenessLevelScheme UniquenessLevel = "scheme"
+
+// The moniker is globally unique
+const UniquenessLevelGlobal UniquenessLevel = "global"
+
+// The moniker kind.
+type MonikerKind string
+
+// The moniker represent a symbol that is imported into a project
+const MonikerKindImport MonikerKind = "import"
+
+// The moniker represents a symbol that is exported from a project
+const MonikerKindExport MonikerKind = "export"
+
+// The moniker represents a symbol that is local to a project (e.g. a local
+// variable of a function, a class not visible outside the project, ...)
+const MonikerKindLocal MonikerKind = "local"
+
+// Moniker definition to match LSIF 0.5 moniker definition.
+type Moniker struct {
+	// The scheme of the moniker. For example tsc or .Net
+	Scheme string `json:"scheme,required"`
+
+	// The identifier of the moniker. The value is opaque in LSIF however
+	// schema owners are allowed to define the structure if they want.
+	Identifier string `json:"identifier,required"`
+
+	// The scope in which the moniker is unique
+	Unique UniquenessLevel `json:"unique,required"`
+
+	// The moniker kind if known.
+	Kind MonikerKind `json:"kind,omitemty"`
 }

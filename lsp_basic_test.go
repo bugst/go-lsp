@@ -17,7 +17,7 @@ func TestDecodingProgressReports(t *testing.T) {
 				"cancellable": true
 			}
 		}`
-		r, err := DecodeNotificationParams("$/progress", json.RawMessage([]byte(begin_json)))
+		r, err := DecodeServerNotificationParams("$/progress", json.RawMessage([]byte(begin_json)))
 		require.NoError(t, err)
 		require.IsType(t, &ProgressParams{}, r)
 		pp := r.(*ProgressParams)
@@ -34,7 +34,7 @@ func TestDecodingProgressReports(t *testing.T) {
 				"cancellable": true
 			}
 		}`
-		r, err := DecodeNotificationParams("$/progress", json.RawMessage([]byte(report_json)))
+		r, err := DecodeServerNotificationParams("$/progress", json.RawMessage([]byte(report_json)))
 		require.NoError(t, err)
 		require.IsType(t, &ProgressParams{}, r)
 		pp := r.(*ProgressParams)
@@ -50,7 +50,7 @@ func TestDecodingProgressReports(t *testing.T) {
 				"message": "bye"
 			}
 		}`
-		r, err := DecodeNotificationParams("$/progress", json.RawMessage([]byte(report_json)))
+		r, err := DecodeServerNotificationParams("$/progress", json.RawMessage([]byte(report_json)))
 		require.NoError(t, err)
 		require.IsType(t, &ProgressParams{}, r)
 		pp := r.(*ProgressParams)

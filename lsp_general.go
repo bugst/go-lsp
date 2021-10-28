@@ -133,3 +133,15 @@ type SetTraceParams struct {
 	// The new value that should be assigned to the trace setting.
 	Value TraceValue `json:"value,required"`
 }
+
+type ConfigurationParams struct {
+	Items []ConfigurationItem `json:"items,required"`
+}
+
+type ConfigurationItem struct {
+	// The scope to get the configuration section for.
+	ScopeUri DocumentURI `json:"scopeUri,omitempty"`
+
+	// The configuration section asked for.
+	Section string `json:"section,omitempty"`
+}

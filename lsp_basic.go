@@ -25,6 +25,11 @@ type WorkDoneProgressCreateParams struct {
 	Token json.RawMessage `json:"token,required"`
 }
 
+type WorkDoneProgressCancelParams struct {
+	// The token to be used to report progress.
+	Token json.RawMessage `json:"token,required"`
+}
+
 type ProgressParams struct {
 	// The progress token provided by the client or server.
 	Token json.RawMessage `json:"token,required"`
@@ -121,4 +126,38 @@ type WorkDoneProgressEnd struct {
 	// Optional, a final message indicating to for example indicate the outcome
 	// of the operation.
 	Message string `json:"message,omitempty"`
+}
+
+// General parameters to register for a capability.
+type Registration struct {
+	// The id used to register the request. The id can be used to deregister
+	// the request again.
+	ID string `json:"id,required"`
+
+	// The method / capability to register for.
+	Method string `json:"method,required"`
+
+	// Options necessary for the registration.
+	RegisterOptions json.RawMessage `json:"registerOptions,omitempty"`
+}
+
+type RegistrationParams struct {
+	Registrations []Registration `json:"registrations,required"`
+}
+
+// General parameters to unregister a capability.
+type Unregistration struct {
+	// The id used to unregister the request or notification. Usually an id
+	// provided during the register request.
+	ID string `json:"id,required"`
+
+	// The method / capability to unregister for.
+	Method string `json:"method,required"`
+}
+
+type UnregistrationParams struct {
+	// This should correctly be named `unregistrations`. However changing this
+	// is a breaking change and needs to wait until we deliver a 4.x version
+	// of the specification.
+	Unregisterations []Unregistration `json:"unregisterations,required"`
 }

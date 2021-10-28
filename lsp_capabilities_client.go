@@ -1247,3 +1247,94 @@ type MarkdownClientCapabilities struct {
 	// The version of the parser.
 	Version string `json:"version,omitempty"`
 }
+
+type DocumentLinkParams struct {
+	*WorkDoneProgressParams
+	*PartialResultParams
+
+	// The document to provide document links for.
+	TextDocument TextDocumentIdentifier `json:"textDocument,required"`
+}
+
+// A document link is a range in a text document that links to an internal or
+// external resource, like another text document or a web site.
+type DocumentLink struct {
+	// The range this link applies to.
+	Range Range `json:"range,required"`
+
+	// The uri this link points to. If missing a resolve request is sent later.
+	Target DocumentURI `json:"target,omitempty"`
+
+	// The tooltip text when you hover over this link.
+	//
+	// If a tooltip is provided, is will be displayed in a string that includes
+	// instructions on how to trigger the link, such as `{0} (ctrl + click)`.
+	// The specific instructions vary depending on OS, user settings, and
+	// localization.
+	//
+	// @since 3.15.0
+	Tooltip string `json:"tooltip,omitempty"`
+
+	// A data entry field that is preserved on a document link between a
+	// DocumentLinkRequest and a DocumentLinkResolveRequest.
+	Data json.RawMessage `json:"data,omitempty"`
+}
+
+type DocumentColorParams struct {
+	*WorkDoneProgressParams
+	*PartialResultParams
+
+	// The text document.
+	RextDocument TextDocumentIdentifier `json:"textDocument,required"`
+}
+type ColorInformation struct {
+	// The range in the document where this color appears.
+	Range Range `json:"range,required"`
+
+	// The actual color value for this color range.
+	Color Color `json:"color,required"`
+}
+
+// Represents a color in RGBA space.
+type Color struct {
+	// The red component of this color in the range [0-1].
+	Red float64 `json:"red,required"`
+
+	// The green component of this color in the range [0-1].
+	Green float64 `json:"green,required"`
+
+	// The blue component of this color in the range [0-1].
+	Blue float64 `json:"blue,required"`
+
+	// The alpha component of this color in the range [0-1].
+	Alpha float64 `json:"alpha,required"`
+}
+
+type ColorPresentationParams struct {
+	*WorkDoneProgressParams
+	*PartialResultParams
+
+	// The text document.
+	RextDocument TextDocumentIdentifier `json:"textDocument,required"`
+
+	// The color information to request presentations for.
+	Color Color `json:"color,required"`
+
+	// The range where the color would be inserted. Serves as a context.
+	Range Range `json:"range,required"`
+}
+
+type ColorPresentation struct {
+	// The label of this color presentation. It will be shown on the color
+	// picker header. By default this is also the text that is inserted when
+	// selecting this color presentation.
+	Label string `json:"label,required"`
+	// An [edit](#TextEdit) which is applied to a document when selecting
+	// this presentation for the color. When `falsy` the
+	// [label](#ColorPresentation.label) is used.
+	RextEdit *TextEdit `json:"textEdit,omitempty"`
+	// An optional array of additional [text edits](#TextEdit) that are applied
+	// when selecting this color presentation. Edits must not overlap with the
+	// main [edit](#ColorPresentation.textEdit) nor with themselves.
+	AdditionalTextEdits []TextEdit `json:"additionalTextEdits,omitempty"`
+}

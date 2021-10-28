@@ -57,7 +57,7 @@ func TestSumTypes(t *testing.T) {
 	// Let's try an array of CommandOrCodeActions...
 	{
 		jsonIn := json.RawMessage("[" + ca_json + "," + com_json + "," + ca_json + "," + ca_json + "," + com_json + "]")
-		res, err := DecodeResponseResult("textDocument/codeAction", jsonIn)
+		res, err := DecodeServerResponseResult("textDocument/codeAction", jsonIn)
 		require.NoError(t, err)
 		require.IsType(t, []CommandOrCodeAction{}, res)
 		resArray := res.([]CommandOrCodeAction)
