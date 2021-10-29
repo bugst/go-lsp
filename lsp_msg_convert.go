@@ -138,7 +138,7 @@ func DecodeClientRequestParams(method string, req json.RawMessage) (interface{},
 		var res MonikerParams
 		return &res, json.Unmarshal(req, &res)
 	default:
-		return nil, nil
+		panic("unimplemented message")
 	}
 }
 
@@ -455,7 +455,7 @@ func DecodeServerResponseResult(method string, resp json.RawMessage) (interface{
 		var res []Moniker
 		return &res, json.Unmarshal(resp, &res)
 	default:
-		return nil, nil
+		panic("unimplemented message")
 	}
 }
 
@@ -491,7 +491,7 @@ func DecodeServerRequestParams(method string, req json.RawMessage) (interface{},
 	case "workspace/codeLens/refresh":
 		return nil, nil
 	default:
-		return nil, nil
+		panic("unimplemented message")
 	}
 }
 
@@ -534,7 +534,7 @@ func DecodeClientResponseResult(method string, resp json.RawMessage) (interface{
 	case "workspace/codeLens/refresh":
 		return nil, nil
 	default:
-		return nil, nil
+		panic("unimplemented message")
 	}
 }
 
@@ -592,7 +592,7 @@ func DecodeClientNotificationParams(method string, req json.RawMessage) (interfa
 		var res DidCloseTextDocumentParams
 		return &res, json.Unmarshal(req, &res)
 	default:
-		return nil, nil
+		panic("unimplemented message")
 	}
 }
 
@@ -621,7 +621,7 @@ func DecodeServerNotificationParams(method string, req json.RawMessage) (interfa
 		var res PublishDiagnosticsParams
 		return &res, json.Unmarshal(req, &res)
 	default:
-		return nil, nil
+		panic("unimplemented message")
 	}
 }
 
