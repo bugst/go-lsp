@@ -23,6 +23,10 @@ type TextDocumentPositionParams struct {
 	Position Position `json:"position,required"`
 }
 
+func (t TextDocumentPositionParams) String() string {
+	return t.TextDocument.String() + ":" + t.Position.String()
+}
+
 // Contains additional information about the context in which a completion
 // request is triggered.
 type CompletionContext struct {

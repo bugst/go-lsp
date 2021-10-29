@@ -37,6 +37,10 @@ type TextDocumentIdentifier struct {
 	URI DocumentURI `json:"uri,required"`
 }
 
+func (t TextDocumentIdentifier) String() string {
+	return t.URI.String()
+}
+
 type VersionedTextDocumentIdentifier struct {
 	TextDocumentIdentifier
 
