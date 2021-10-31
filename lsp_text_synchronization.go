@@ -1,5 +1,10 @@
 package lsp
 
+import (
+	"fmt"
+	"strconv"
+)
+
 type DidOpenTextDocumentParams struct {
 	// The document that was opened.
 	TextDocument TextDocumentItem `json:"textDocument,required"`
@@ -51,6 +56,10 @@ type VersionedTextDocumentIdentifier struct {
 	Version int `json:"version.required"`
 }
 
+func (v VersionedTextDocumentIdentifier) String() string {
+	return fmt.Sprintf("%s@%d", v.TextDocumentIdentifier, v.Version)
+}
+
 // An event describing a change to a text document. If range and rangeLength are
 // omitted the new text is considered to be the full content of the document.
 type TextDocumentContentChangeEvent struct {
@@ -66,6 +75,10 @@ type TextDocumentContentChangeEvent struct {
 	Text string `json:"text,required"`
 }
 
+func (change *TextDocumentContentChangeEvent) String() string {
+	return fmt.Sprintf("%s -> %s", change.Range, strconv.Quote(change.Text))
+}
+
 type TextDocumentItem struct {
 	// The text document's URI.
 	URI DocumentURI `json:"uri,required"`
@@ -79,6 +92,10 @@ type TextDocumentItem struct {
 
 	// The content of the opened text document.
 	Text string `json:"text,required"`
+}
+
+func (t TextDocumentItem) String() string {
+	return fmt.Sprintf("%s@%d as '%s'", t.URI, t.Version, t.LanguageID)
 }
 
 type DidSaveTextDocumentParams struct {

@@ -523,11 +523,11 @@ func DecodeClientResponseResult(method string, resp json.RawMessage) (interface{
 			return nil, nil
 		}
 		var res []WorkspaceFolder
-		return &res, json.Unmarshal(resp, &res)
+		return res, json.Unmarshal(resp, &res)
 	case "workspace/configuration":
 		// result: any[]
 		var res []json.RawMessage
-		return &res, json.Unmarshal(resp, &res)
+		return res, json.Unmarshal(resp, &res)
 	case "workspace/applyEdit":
 		var res ApplyWorkspaceEditResult
 		return &res, json.Unmarshal(resp, &res)
