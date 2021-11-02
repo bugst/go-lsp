@@ -13,25 +13,24 @@ import (
 type ServerMessagesHandler interface {
 	// Response <- Request
 
-	WindowShowMessageRequest(context.Context, *ShowMessageRequestParams) (*MessageActionItem, *jsonrpc.ResponseError)
-	WindowShowDocument(context.Context, *ShowDocumentParams) (*ShowDocumentResult, *jsonrpc.ResponseError)
-	WindowWorkDoneProgressCreate(context.Context, *WorkDoneProgressCreateParams) *jsonrpc.ResponseError
-	ClientRegisterCapability(context.Context, *RegistrationParams) *jsonrpc.ResponseError
-	ClientUnregisterCapability(context.Context, *UnregistrationParams) *jsonrpc.ResponseError
-	WorkspaceWorkspaceFolders(context.Context) ([]WorkspaceFolder, *jsonrpc.ResponseError)
-	WorkspaceConfiguration(context.Context, *ConfigurationParams) ([]json.RawMessage, *jsonrpc.ResponseError)
-	WorkspaceApplyEdit(context.Context, *ApplyWorkspaceEditParams) (*ApplyWorkspaceEditResult, *jsonrpc.ResponseError)
-	WorkspaceCodeLensRefresh(context.Context) *jsonrpc.ResponseError
+	WindowShowMessageRequest(context.Context, jsonrpc.FunctionLogger, *ShowMessageRequestParams) (*MessageActionItem, *jsonrpc.ResponseError)
+	WindowShowDocument(context.Context, jsonrpc.FunctionLogger, *ShowDocumentParams) (*ShowDocumentResult, *jsonrpc.ResponseError)
+	WindowWorkDoneProgressCreate(context.Context, jsonrpc.FunctionLogger, *WorkDoneProgressCreateParams) *jsonrpc.ResponseError
+	ClientRegisterCapability(context.Context, jsonrpc.FunctionLogger, *RegistrationParams) *jsonrpc.ResponseError
+	ClientUnregisterCapability(context.Context, jsonrpc.FunctionLogger, *UnregistrationParams) *jsonrpc.ResponseError
+	WorkspaceWorkspaceFolders(context.Context, jsonrpc.FunctionLogger) ([]WorkspaceFolder, *jsonrpc.ResponseError)
+	WorkspaceConfiguration(context.Context, jsonrpc.FunctionLogger, *ConfigurationParams) ([]json.RawMessage, *jsonrpc.ResponseError)
+	WorkspaceApplyEdit(context.Context, jsonrpc.FunctionLogger, *ApplyWorkspaceEditParams) (*ApplyWorkspaceEditResult, *jsonrpc.ResponseError)
+	WorkspaceCodeLensRefresh(context.Context, jsonrpc.FunctionLogger) *jsonrpc.ResponseError
 
 	// Notifications <-
 
-	Progress(*ProgressParams)
-	// CancelRequrest(*jsonrpc.CancelParams) - automatically handled by the rpc library
-	LogTrace(*LogTraceParams)
-	WindowShowMessage(*ShowMessageParams)
-	WindowLogMessage(*LogMessageParams)
-	TelemetryEvent(json.RawMessage)
-	TextDocumentPublishDiagnostics(*PublishDiagnosticsParams)
+	Progress(jsonrpc.FunctionLogger, *ProgressParams)
+	LogTrace(jsonrpc.FunctionLogger, *LogTraceParams)
+	WindowShowMessage(jsonrpc.FunctionLogger, *ShowMessageParams)
+	WindowLogMessage(jsonrpc.FunctionLogger, *LogMessageParams)
+	TelemetryEvent(jsonrpc.FunctionLogger, json.RawMessage)
+	TextDocumentPublishDiagnostics(jsonrpc.FunctionLogger, *PublishDiagnosticsParams)
 }
 
 // Client is an LSP Client
@@ -71,7 +70,7 @@ func (client *Client) Run() {
 	client.conn.Run()
 }
 
-func (client *Client) notificationDispatcher(ctx context.Context, method string, req json.RawMessage) {
+func (client *Client) notificationDispatcher(logger jsonrpc.FunctionLogger, method string, req json.RawMessage) {
 	switch method {
 	case "$/progress":
 		var param ProgressParams
@@ -79,7 +78,7 @@ func (client *Client) notificationDispatcher(ctx context.Context, method string,
 			client.errorHandler(err)
 			return
 		}
-		client.handler.Progress(&param)
+		client.handler.Progress(logger, &param)
 	case "$/cancelRequrest":
 		panic("should not reach here")
 	case "$/logTrace":
@@ -88,37 +87,37 @@ func (client *Client) notificationDispatcher(ctx context.Context, method string,
 			client.errorHandler(err)
 			return
 		}
-		client.handler.LogTrace(&param)
+		client.handler.LogTrace(logger, &param)
 	case "window/showMessage":
 		var param ShowMessageParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			client.errorHandler(err)
 			return
 		}
-		client.handler.WindowShowMessage(&param)
+		client.handler.WindowShowMessage(logger, &param)
 	case "window/logMessage":
 		var param LogMessageParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			client.errorHandler(err)
 			return
 		}
-		client.handler.WindowLogMessage(&param)
+		client.handler.WindowLogMessage(logger, &param)
 	case "telemetry/event":
 		// params: ‘object’ | ‘number’ | ‘boolean’ | ‘string’;
-		client.handler.TelemetryEvent(req) // passthrough
+		client.handler.TelemetryEvent(logger, req) // passthrough
 	case "textDocument/publishDiagnostics":
 		var param PublishDiagnosticsParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			client.errorHandler(err)
 			return
 		}
-		client.handler.TextDocumentPublishDiagnostics(&param)
+		client.handler.TextDocumentPublishDiagnostics(logger, &param)
 	default:
 		panic("unimplemented message")
 	}
 }
 
-func (client *Client) requestDispatcher(ctx context.Context, method string, req json.RawMessage, respCallback func(json.RawMessage, *jsonrpc.ResponseError)) {
+func (client *Client) requestDispatcher(ctx context.Context, logger jsonrpc.FunctionLogger, method string, req json.RawMessage, respCallback func(json.RawMessage, *jsonrpc.ResponseError)) {
 	resp := func(res interface{}, err *jsonrpc.ResponseError) {
 		respCallback(EncodeMessage(res), err)
 	}
@@ -129,53 +128,53 @@ func (client *Client) requestDispatcher(ctx context.Context, method string, req 
 			client.errorHandler(err)
 			return
 		}
-		resp(client.handler.WindowShowMessageRequest(ctx, &param))
+		resp(client.handler.WindowShowMessageRequest(ctx, logger, &param))
 	case "window/showDocument":
 		var param ShowDocumentParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			client.errorHandler(err)
 			return
 		}
-		resp(client.handler.WindowShowDocument(ctx, &param))
+		resp(client.handler.WindowShowDocument(ctx, logger, &param))
 	case "window/workDoneProgress/create":
 		var param WorkDoneProgressCreateParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			client.errorHandler(err)
 			return
 		}
-		resp(nil, client.handler.WindowWorkDoneProgressCreate(ctx, &param))
+		resp(nil, client.handler.WindowWorkDoneProgressCreate(ctx, logger, &param))
 	case "client/registerCapability":
 		var param RegistrationParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			client.errorHandler(err)
 			return
 		}
-		resp(nil, client.handler.ClientRegisterCapability(ctx, &param))
+		resp(nil, client.handler.ClientRegisterCapability(ctx, logger, &param))
 	case "client/unregisterCapability":
 		var param UnregistrationParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			client.errorHandler(err)
 			return
 		}
-		resp(nil, client.handler.ClientUnregisterCapability(ctx, &param))
+		resp(nil, client.handler.ClientUnregisterCapability(ctx, logger, &param))
 	case "workspace/workspaceFolders":
-		resp(client.handler.WorkspaceWorkspaceFolders(ctx))
+		resp(client.handler.WorkspaceWorkspaceFolders(ctx, logger))
 	case "workspace/configuration":
 		var param ConfigurationParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			client.errorHandler(err)
 			return
 		}
-		resp(client.handler.WorkspaceConfiguration(ctx, &param))
+		resp(client.handler.WorkspaceConfiguration(ctx, logger, &param))
 	case "workspace/applyEdit":
 		var param ApplyWorkspaceEditParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			client.errorHandler(err)
 			return
 		}
-		resp(client.handler.WorkspaceApplyEdit(ctx, &param))
+		resp(client.handler.WorkspaceApplyEdit(ctx, logger, &param))
 	case "workspace/codeLens/refresh":
-		resp(nil, client.handler.WorkspaceCodeLensRefresh(ctx))
+		resp(nil, client.handler.WorkspaceCodeLensRefresh(ctx, logger))
 	default:
 		panic("unimplemented message")
 	}

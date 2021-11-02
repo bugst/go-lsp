@@ -48,10 +48,10 @@ type outResponse struct {
 }
 
 // RequestHandler handles requests from a jsonrpc Connection.
-type RequestHandler func(ctx context.Context, method string, params json.RawMessage, respCallback func(result json.RawMessage, err *ResponseError))
+type RequestHandler func(ctx context.Context, logger FunctionLogger, method string, params json.RawMessage, respCallback func(result json.RawMessage, err *ResponseError))
 
 // NotificationHandler handles notifications from a jsonrpc Connection.
-type NotificationHandler func(ctx context.Context, method string, params json.RawMessage)
+type NotificationHandler func(logger FunctionLogger, method string, params json.RawMessage)
 
 // NewConnection starts a new
 func NewConnection(in io.Reader, out io.Writer, requestHandler RequestHandler, notificationHandler NotificationHandler, errorHandler func(error)) *Connection {
@@ -132,10 +132,10 @@ func (c *Connection) handleIncomingRequest(req *RequestMessage) {
 	c.activeInRequestsMutex.Unlock()
 
 	c.loggerMutex.Lock()
-	c.logger.LogIncomingRequest(id, req.Method, req.Params)
+	logger := c.logger.LogIncomingRequest(id, req.Method, req.Params)
 	c.loggerMutex.Unlock()
 
-	c.requestHandler(ctx, req.Method, req.Params, func(result json.RawMessage, resultErr *ResponseError) {
+	c.requestHandler(ctx, logger, req.Method, req.Params, func(result json.RawMessage, resultErr *ResponseError) {
 		c.activeInRequestsMutex.Lock()
 		c.activeInRequests[id].cancel()
 		delete(c.activeInRequests, id)
@@ -171,10 +171,10 @@ func (c *Connection) handleIncomingNotification(notif *NotificationMessage) {
 	}
 
 	c.loggerMutex.Lock()
-	c.logger.LogIncomingNotification(notif.Method, notif.Params)
+	logger := c.logger.LogIncomingNotification(notif.Method, notif.Params)
 	c.loggerMutex.Unlock()
 
-	c.notificationHandler(context.Background(), notif.Method, notif.Params)
+	c.notificationHandler(logger, notif.Method, notif.Params)
 }
 
 func (c *Connection) handleIncomingResponse(resp *ResponseMessage) {

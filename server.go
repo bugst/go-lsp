@@ -13,69 +13,69 @@ import (
 type ClientMessagesHandler interface {
 	// Request -> Response
 
-	Initialize(context.Context, *InitializeParams) (*InitializeResult, *jsonrpc.ResponseError)
-	Shutdown(context.Context) *jsonrpc.ResponseError
-	WorkspaceSymbol(context.Context, *WorkspaceSymbolParams) ([]SymbolInformation, *jsonrpc.ResponseError)
-	WorkspaceExecuteCommand(context.Context, *ExecuteCommandParams) (json.RawMessage, *jsonrpc.ResponseError)
-	WorkspaceWillCreateFiles(context.Context, *CreateFilesParams) (*WorkspaceEdit, *jsonrpc.ResponseError)
-	WorkspaceWillRenameFiles(context.Context, *RenameFilesParams) (*WorkspaceEdit, *jsonrpc.ResponseError)
-	WorkspaceWillDeleteFiles(context.Context, *DeleteFilesParams) (*WorkspaceEdit, *jsonrpc.ResponseError)
-	TextDocumentWillSaveWaitUntil(context.Context, *WillSaveTextDocumentParams) ([]TextEdit, *jsonrpc.ResponseError)
-	TextDocumentCompletion(context.Context, *CompletionParams) (*CompletionList, *jsonrpc.ResponseError)
-	CompletionItemResolve(context.Context, *CompletionItem) (*CompletionItem, *jsonrpc.ResponseError)
-	TextDocumentHover(context.Context, *HoverParams) (*Hover, *jsonrpc.ResponseError)
-	TextDocumentSignatureHelp(context.Context, *SignatureHelpParams) (*SignatureHelp, *jsonrpc.ResponseError)
-	TextDocumentDeclaration(context.Context, *DeclarationParams) ([]Location, []LocationLink, *jsonrpc.ResponseError)
-	TextDocumentDefinition(context.Context, *DefinitionParams) ([]Location, []LocationLink, *jsonrpc.ResponseError)
-	TextDocumentTypeDefinition(context.Context, *TypeDefinitionParams) ([]Location, []LocationLink, *jsonrpc.ResponseError)
-	TextDocumentImplementation(context.Context, *ImplementationParams) ([]Location, []LocationLink, *jsonrpc.ResponseError)
-	TextDocumentReferences(context.Context, *ReferenceParams) ([]Location, *jsonrpc.ResponseError)
-	TextDocumentDocumentHighlight(context.Context, *DocumentHighlightParams) ([]DocumentHighlight, *jsonrpc.ResponseError)
-	TextDocumentDocumentSymbol(context.Context, *DocumentSymbolParams) ([]DocumentSymbol, []SymbolInformation, *jsonrpc.ResponseError)
-	TextDocumentCodeAction(context.Context, *CodeActionParams) ([]CommandOrCodeAction, *jsonrpc.ResponseError)
-	CodeActionResolve(context.Context, *CodeAction) (*CodeAction, *jsonrpc.ResponseError)
-	TextDocumentCodeLens(context.Context, *CodeLensParams) ([]CodeLens, *jsonrpc.ResponseError)
-	CodeLensResolve(context.Context, *CodeLens) (*CodeLens, *jsonrpc.ResponseError)
-	TextDocumentDocumentLink(context.Context, *DocumentLinkParams) ([]DocumentLink, *jsonrpc.ResponseError)
-	DocumentLinkResolve(context.Context, *DocumentLink) (*DocumentLink, *jsonrpc.ResponseError)
-	TextDocumentDocumentColor(context.Context, *DocumentColorParams) ([]ColorInformation, *jsonrpc.ResponseError)
-	TextDocumentColorPresentation(context.Context, *ColorPresentationParams) ([]ColorPresentation, *jsonrpc.ResponseError)
-	TextDocumentFormatting(context.Context, *DocumentFormattingParams) ([]TextEdit, *jsonrpc.ResponseError)
-	TextDocumentRangeFormatting(context.Context, *DocumentRangeFormattingParams) ([]TextEdit, *jsonrpc.ResponseError)
-	TextDocumentOnTypeFormatting(context.Context, *DocumentOnTypeFormattingParams) ([]TextEdit, *jsonrpc.ResponseError)
-	TextDocumentRename(context.Context, *RenameParams) (*WorkspaceEdit, *jsonrpc.ResponseError)
-	//TextDocumentPrepareRename(context.Context, *PrepareRenameParams) (???, *jsonrpc.ResponseError)
-	TextDocumentFoldingRange(context.Context, *FoldingRangeParams) ([]FoldingRange, *jsonrpc.ResponseError)
-	TextDocumentSelectionRange(context.Context, *SelectionRangeParams) ([]SelectionRange, *jsonrpc.ResponseError)
-	TextDocumentPrepareCallHierarchy(context.Context, *CallHierarchyPrepareParams) ([]CallHierarchyItem, *jsonrpc.ResponseError)
-	CallHierarchyIncomingCalls(context.Context, *CallHierarchyIncomingCallsParams) ([]CallHierarchyIncomingCall, *jsonrpc.ResponseError)
-	CallHierarchyOutgoingCalls(context.Context, *CallHierarchyOutgoingCallsParams) ([]CallHierarchyOutgoingCall, *jsonrpc.ResponseError)
-	TextDocumentSemanticTokensFull(context.Context, *SemanticTokensParams) (*SemanticTokens, *jsonrpc.ResponseError)
-	TextDocumentSemanticTokensFullDelta(context.Context, *SemanticTokensDeltaParams) (*SemanticTokens, *SemanticTokensDelta, *jsonrpc.ResponseError)
-	TextDocumentSemanticTokensRange(context.Context, *SemanticTokensRangeParams) (*SemanticTokens, *jsonrpc.ResponseError)
-	WorkspaceSemanticTokensRefresh(context.Context) *jsonrpc.ResponseError
-	TextDocumentLinkedEditingRange(context.Context, *LinkedEditingRangeParams) (*LinkedEditingRanges, *jsonrpc.ResponseError)
-	TextDocumentMoniker(context.Context, *MonikerParams) ([]Moniker, *jsonrpc.ResponseError)
+	Initialize(context.Context, jsonrpc.FunctionLogger, *InitializeParams) (*InitializeResult, *jsonrpc.ResponseError)
+	Shutdown(context.Context, jsonrpc.FunctionLogger) *jsonrpc.ResponseError
+	WorkspaceSymbol(context.Context, jsonrpc.FunctionLogger, *WorkspaceSymbolParams) ([]SymbolInformation, *jsonrpc.ResponseError)
+	WorkspaceExecuteCommand(context.Context, jsonrpc.FunctionLogger, *ExecuteCommandParams) (json.RawMessage, *jsonrpc.ResponseError)
+	WorkspaceWillCreateFiles(context.Context, jsonrpc.FunctionLogger, *CreateFilesParams) (*WorkspaceEdit, *jsonrpc.ResponseError)
+	WorkspaceWillRenameFiles(context.Context, jsonrpc.FunctionLogger, *RenameFilesParams) (*WorkspaceEdit, *jsonrpc.ResponseError)
+	WorkspaceWillDeleteFiles(context.Context, jsonrpc.FunctionLogger, *DeleteFilesParams) (*WorkspaceEdit, *jsonrpc.ResponseError)
+	TextDocumentWillSaveWaitUntil(context.Context, jsonrpc.FunctionLogger, *WillSaveTextDocumentParams) ([]TextEdit, *jsonrpc.ResponseError)
+	TextDocumentCompletion(context.Context, jsonrpc.FunctionLogger, *CompletionParams) (*CompletionList, *jsonrpc.ResponseError)
+	CompletionItemResolve(context.Context, jsonrpc.FunctionLogger, *CompletionItem) (*CompletionItem, *jsonrpc.ResponseError)
+	TextDocumentHover(context.Context, jsonrpc.FunctionLogger, *HoverParams) (*Hover, *jsonrpc.ResponseError)
+	TextDocumentSignatureHelp(context.Context, jsonrpc.FunctionLogger, *SignatureHelpParams) (*SignatureHelp, *jsonrpc.ResponseError)
+	TextDocumentDeclaration(context.Context, jsonrpc.FunctionLogger, *DeclarationParams) ([]Location, []LocationLink, *jsonrpc.ResponseError)
+	TextDocumentDefinition(context.Context, jsonrpc.FunctionLogger, *DefinitionParams) ([]Location, []LocationLink, *jsonrpc.ResponseError)
+	TextDocumentTypeDefinition(context.Context, jsonrpc.FunctionLogger, *TypeDefinitionParams) ([]Location, []LocationLink, *jsonrpc.ResponseError)
+	TextDocumentImplementation(context.Context, jsonrpc.FunctionLogger, *ImplementationParams) ([]Location, []LocationLink, *jsonrpc.ResponseError)
+	TextDocumentReferences(context.Context, jsonrpc.FunctionLogger, *ReferenceParams) ([]Location, *jsonrpc.ResponseError)
+	TextDocumentDocumentHighlight(context.Context, jsonrpc.FunctionLogger, *DocumentHighlightParams) ([]DocumentHighlight, *jsonrpc.ResponseError)
+	TextDocumentDocumentSymbol(context.Context, jsonrpc.FunctionLogger, *DocumentSymbolParams) ([]DocumentSymbol, []SymbolInformation, *jsonrpc.ResponseError)
+	TextDocumentCodeAction(context.Context, jsonrpc.FunctionLogger, *CodeActionParams) ([]CommandOrCodeAction, *jsonrpc.ResponseError)
+	CodeActionResolve(context.Context, jsonrpc.FunctionLogger, *CodeAction) (*CodeAction, *jsonrpc.ResponseError)
+	TextDocumentCodeLens(context.Context, jsonrpc.FunctionLogger, *CodeLensParams) ([]CodeLens, *jsonrpc.ResponseError)
+	CodeLensResolve(context.Context, jsonrpc.FunctionLogger, *CodeLens) (*CodeLens, *jsonrpc.ResponseError)
+	TextDocumentDocumentLink(context.Context, jsonrpc.FunctionLogger, *DocumentLinkParams) ([]DocumentLink, *jsonrpc.ResponseError)
+	DocumentLinkResolve(context.Context, jsonrpc.FunctionLogger, *DocumentLink) (*DocumentLink, *jsonrpc.ResponseError)
+	TextDocumentDocumentColor(context.Context, jsonrpc.FunctionLogger, *DocumentColorParams) ([]ColorInformation, *jsonrpc.ResponseError)
+	TextDocumentColorPresentation(context.Context, jsonrpc.FunctionLogger, *ColorPresentationParams) ([]ColorPresentation, *jsonrpc.ResponseError)
+	TextDocumentFormatting(context.Context, jsonrpc.FunctionLogger, *DocumentFormattingParams) ([]TextEdit, *jsonrpc.ResponseError)
+	TextDocumentRangeFormatting(context.Context, jsonrpc.FunctionLogger, *DocumentRangeFormattingParams) ([]TextEdit, *jsonrpc.ResponseError)
+	TextDocumentOnTypeFormatting(context.Context, jsonrpc.FunctionLogger, *DocumentOnTypeFormattingParams) ([]TextEdit, *jsonrpc.ResponseError)
+	TextDocumentRename(context.Context, jsonrpc.FunctionLogger, *RenameParams) (*WorkspaceEdit, *jsonrpc.ResponseError)
+	//TextDocumentPrepareRename(context.Context,jsonrpc.FunctionLogger, *PrepareRenameParams) (???, *jsonrpc.ResponseError)
+	TextDocumentFoldingRange(context.Context, jsonrpc.FunctionLogger, *FoldingRangeParams) ([]FoldingRange, *jsonrpc.ResponseError)
+	TextDocumentSelectionRange(context.Context, jsonrpc.FunctionLogger, *SelectionRangeParams) ([]SelectionRange, *jsonrpc.ResponseError)
+	TextDocumentPrepareCallHierarchy(context.Context, jsonrpc.FunctionLogger, *CallHierarchyPrepareParams) ([]CallHierarchyItem, *jsonrpc.ResponseError)
+	CallHierarchyIncomingCalls(context.Context, jsonrpc.FunctionLogger, *CallHierarchyIncomingCallsParams) ([]CallHierarchyIncomingCall, *jsonrpc.ResponseError)
+	CallHierarchyOutgoingCalls(context.Context, jsonrpc.FunctionLogger, *CallHierarchyOutgoingCallsParams) ([]CallHierarchyOutgoingCall, *jsonrpc.ResponseError)
+	TextDocumentSemanticTokensFull(context.Context, jsonrpc.FunctionLogger, *SemanticTokensParams) (*SemanticTokens, *jsonrpc.ResponseError)
+	TextDocumentSemanticTokensFullDelta(context.Context, jsonrpc.FunctionLogger, *SemanticTokensDeltaParams) (*SemanticTokens, *SemanticTokensDelta, *jsonrpc.ResponseError)
+	TextDocumentSemanticTokensRange(context.Context, jsonrpc.FunctionLogger, *SemanticTokensRangeParams) (*SemanticTokens, *jsonrpc.ResponseError)
+	WorkspaceSemanticTokensRefresh(context.Context, jsonrpc.FunctionLogger) *jsonrpc.ResponseError
+	TextDocumentLinkedEditingRange(context.Context, jsonrpc.FunctionLogger, *LinkedEditingRangeParams) (*LinkedEditingRanges, *jsonrpc.ResponseError)
+	TextDocumentMoniker(context.Context, jsonrpc.FunctionLogger, *MonikerParams) ([]Moniker, *jsonrpc.ResponseError)
 
 	// Notifications ->
 
-	Progress(*ProgressParams)
+	Progress(jsonrpc.FunctionLogger, *ProgressParams)
 	// CancelRequrest(*jsonrpc.CancelParams) - automatically handled by the rpc library
-	Initialized(*InitializeParams)
-	Exit()
-	SetTrace(*SetTraceParams)
-	WindowWorkDoneProgressCancel(*WorkDoneProgressCancelParams)
-	WorkspaceDidChangeWorkspaceFolders(*DidChangeWorkspaceFoldersParams)
-	WorkspaceDidChangeConfiguration(*DidChangeConfigurationParams)
-	WorkspaceDidChangeWatchedFiles(*DidChangeWatchedFilesParams)
-	WorkspaceDidCreateFiles(*CreateFilesParams)
-	WorkspaceDidRenameFiles(*RenameFilesParams)
-	WorkspaceDidDeleteFiles(*DeleteFilesParams)
-	TextDocumentDidOpen(*DidOpenTextDocumentParams)
-	TextDocumentDidChange(*DidChangeTextDocumentParams)
-	TextDocumentWillSave(*WillSaveTextDocumentParams)
-	TextDocumentDidSave(*DidSaveTextDocumentParams)
-	TextDocumentDidClose(*DidCloseTextDocumentParams)
+	Initialized(jsonrpc.FunctionLogger, *InitializeParams)
+	Exit(jsonrpc.FunctionLogger)
+	SetTrace(jsonrpc.FunctionLogger, *SetTraceParams)
+	WindowWorkDoneProgressCancel(jsonrpc.FunctionLogger, *WorkDoneProgressCancelParams)
+	WorkspaceDidChangeWorkspaceFolders(jsonrpc.FunctionLogger, *DidChangeWorkspaceFoldersParams)
+	WorkspaceDidChangeConfiguration(jsonrpc.FunctionLogger, *DidChangeConfigurationParams)
+	WorkspaceDidChangeWatchedFiles(jsonrpc.FunctionLogger, *DidChangeWatchedFilesParams)
+	WorkspaceDidCreateFiles(jsonrpc.FunctionLogger, *CreateFilesParams)
+	WorkspaceDidRenameFiles(jsonrpc.FunctionLogger, *RenameFilesParams)
+	WorkspaceDidDeleteFiles(jsonrpc.FunctionLogger, *DeleteFilesParams)
+	TextDocumentDidOpen(jsonrpc.FunctionLogger, *DidOpenTextDocumentParams)
+	TextDocumentDidChange(jsonrpc.FunctionLogger, *DidChangeTextDocumentParams)
+	TextDocumentWillSave(jsonrpc.FunctionLogger, *WillSaveTextDocumentParams)
+	TextDocumentDidSave(jsonrpc.FunctionLogger, *DidSaveTextDocumentParams)
+	TextDocumentDidClose(jsonrpc.FunctionLogger, *DidCloseTextDocumentParams)
 }
 
 // Server is an LSP Server
@@ -115,7 +115,7 @@ func (serv *Server) Run() {
 	serv.conn.Run()
 }
 
-func (serv *Server) notificationDispatcher(ctx context.Context, method string, req json.RawMessage) {
+func (serv *Server) notificationDispatcher(logger jsonrpc.FunctionLogger, method string, req json.RawMessage) {
 	switch method {
 	case "$/progress":
 		var param ProgressParams
@@ -123,7 +123,7 @@ func (serv *Server) notificationDispatcher(ctx context.Context, method string, r
 			serv.errorHandler(err)
 			return
 		}
-		serv.handler.Progress(&param)
+		serv.handler.Progress(logger, &param)
 	case "$/cancelRequrest":
 		panic("should not reach here")
 	case "initialized":
@@ -132,106 +132,106 @@ func (serv *Server) notificationDispatcher(ctx context.Context, method string, r
 			serv.errorHandler(err)
 			return
 		}
-		serv.handler.Initialized(&param)
+		serv.handler.Initialized(logger, &param)
 	case "exit":
-		serv.handler.Exit()
+		serv.handler.Exit(logger)
 	case "$/setTrace":
 		var param SetTraceParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		serv.handler.SetTrace(&param)
+		serv.handler.SetTrace(logger, &param)
 	case "window/workDoneProgress/cancel":
 		var param WorkDoneProgressCancelParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		serv.handler.WindowWorkDoneProgressCancel(&param)
+		serv.handler.WindowWorkDoneProgressCancel(logger, &param)
 	case "workspace/didChangeWorkspaceFolders":
 		var param DidChangeWorkspaceFoldersParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		serv.handler.WorkspaceDidChangeWorkspaceFolders(&param)
+		serv.handler.WorkspaceDidChangeWorkspaceFolders(logger, &param)
 	case "workspace/didChangeConfiguration":
 		var param DidChangeConfigurationParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		serv.handler.WorkspaceDidChangeConfiguration(&param)
+		serv.handler.WorkspaceDidChangeConfiguration(logger, &param)
 	case "workspace/didChangeWatchedFiles":
 		var param DidChangeWatchedFilesParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		serv.handler.WorkspaceDidChangeWatchedFiles(&param)
+		serv.handler.WorkspaceDidChangeWatchedFiles(logger, &param)
 	case "workspace/didCreateFiles":
 		var param CreateFilesParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		serv.handler.WorkspaceDidCreateFiles(&param)
+		serv.handler.WorkspaceDidCreateFiles(logger, &param)
 	case "workspace/didRenameFiles":
 		var param RenameFilesParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		serv.handler.WorkspaceDidRenameFiles(&param)
+		serv.handler.WorkspaceDidRenameFiles(logger, &param)
 	case "workspace/didDeleteFiles":
 		var param DeleteFilesParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		serv.handler.WorkspaceDidDeleteFiles(&param)
+		serv.handler.WorkspaceDidDeleteFiles(logger, &param)
 	case "textDocument/didOpen":
 		var param DidOpenTextDocumentParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		serv.handler.TextDocumentDidOpen(&param)
+		serv.handler.TextDocumentDidOpen(logger, &param)
 	case "textDocument/didChange":
 		var param DidChangeTextDocumentParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		serv.handler.TextDocumentDidChange(&param)
+		serv.handler.TextDocumentDidChange(logger, &param)
 	case "textDocument/willSave":
 		var param WillSaveTextDocumentParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		serv.handler.TextDocumentWillSave(&param)
+		serv.handler.TextDocumentWillSave(logger, &param)
 	case "textDocument/didSave":
 		var param DidSaveTextDocumentParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		serv.handler.TextDocumentDidSave(&param)
+		serv.handler.TextDocumentDidSave(logger, &param)
 	case "textDocument/didClose":
 		var param DidCloseTextDocumentParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		serv.handler.TextDocumentDidClose(&param)
+		serv.handler.TextDocumentDidClose(logger, &param)
 	default:
 		panic("unimplemented message")
 	}
 }
 
-func (serv *Server) requestDispatcher(ctx context.Context, method string, req json.RawMessage, respCallback func(json.RawMessage, *jsonrpc.ResponseError)) {
+func (serv *Server) requestDispatcher(ctx context.Context, logger jsonrpc.FunctionLogger, method string, req json.RawMessage, respCallback func(json.RawMessage, *jsonrpc.ResponseError)) {
 	resp := func(res interface{}, err *jsonrpc.ResponseError) {
 		respCallback(EncodeMessage(res), err)
 	}
@@ -249,219 +249,219 @@ func (serv *Server) requestDispatcher(ctx context.Context, method string, req js
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.Initialize(ctx, &param))
+		resp(serv.handler.Initialize(ctx, logger, &param))
 	case "shutdown":
-		resp(nil, serv.handler.Shutdown(ctx))
+		resp(nil, serv.handler.Shutdown(ctx, logger))
 	case "workspace/symbol":
 		var param WorkspaceSymbolParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.WorkspaceSymbol(ctx, &param))
+		resp(serv.handler.WorkspaceSymbol(ctx, logger, &param))
 	case "workspace/executeCommand":
 		var param ExecuteCommandParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.WorkspaceExecuteCommand(ctx, &param))
+		resp(serv.handler.WorkspaceExecuteCommand(ctx, logger, &param))
 	case "workspace/willCreateFiles":
 		var param CreateFilesParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.WorkspaceWillCreateFiles(ctx, &param))
+		resp(serv.handler.WorkspaceWillCreateFiles(ctx, logger, &param))
 	case "workspace/willRenameFiles":
 		var param RenameFilesParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.WorkspaceWillRenameFiles(ctx, &param))
+		resp(serv.handler.WorkspaceWillRenameFiles(ctx, logger, &param))
 	case "workspace/willDeleteFiles":
 		var param DeleteFilesParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.WorkspaceWillDeleteFiles(ctx, &param))
+		resp(serv.handler.WorkspaceWillDeleteFiles(ctx, logger, &param))
 	case "textDocument/willSaveWaitUntil":
 		var param WillSaveTextDocumentParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentWillSaveWaitUntil(ctx, &param))
+		resp(serv.handler.TextDocumentWillSaveWaitUntil(ctx, logger, &param))
 	case "textDocument/completion":
 		var param CompletionParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentCompletion(ctx, &param))
+		resp(serv.handler.TextDocumentCompletion(ctx, logger, &param))
 	case "completionItem/resolve":
 		var param CompletionItem
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.CompletionItemResolve(ctx, &param))
+		resp(serv.handler.CompletionItemResolve(ctx, logger, &param))
 	case "textDocument/hover":
 		var param HoverParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentHover(ctx, &param))
+		resp(serv.handler.TextDocumentHover(ctx, logger, &param))
 	case "textDocument/signatureHelp":
 		var param SignatureHelpParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentSignatureHelp(ctx, &param))
+		resp(serv.handler.TextDocumentSignatureHelp(ctx, logger, &param))
 	case "textDocument/declaration":
 		var param DeclarationParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp2(serv.handler.TextDocumentDeclaration(ctx, &param))
+		resp2(serv.handler.TextDocumentDeclaration(ctx, logger, &param))
 	case "textDocument/definition":
 		var param DefinitionParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp2(serv.handler.TextDocumentDefinition(ctx, &param))
+		resp2(serv.handler.TextDocumentDefinition(ctx, logger, &param))
 	case "textDocument/typeDefinition":
 		var param TypeDefinitionParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp2(serv.handler.TextDocumentTypeDefinition(ctx, &param))
+		resp2(serv.handler.TextDocumentTypeDefinition(ctx, logger, &param))
 	case "textDocument/implementation":
 		var param ImplementationParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp2(serv.handler.TextDocumentImplementation(ctx, &param))
+		resp2(serv.handler.TextDocumentImplementation(ctx, logger, &param))
 	case "textDocument/references":
 		var param ReferenceParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentReferences(ctx, &param))
+		resp(serv.handler.TextDocumentReferences(ctx, logger, &param))
 	case "textDocument/documentHighlight":
 		var param DocumentHighlightParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentDocumentHighlight(ctx, &param))
+		resp(serv.handler.TextDocumentDocumentHighlight(ctx, logger, &param))
 	case "textDocument/documentSymbol":
 		var param DocumentSymbolParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp2(serv.handler.TextDocumentDocumentSymbol(ctx, &param))
+		resp2(serv.handler.TextDocumentDocumentSymbol(ctx, logger, &param))
 	case "textDocument/codeAction":
 		var param CodeActionParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentCodeAction(ctx, &param))
+		resp(serv.handler.TextDocumentCodeAction(ctx, logger, &param))
 	case "codeAction/resolve":
 		var param CodeAction
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.CodeActionResolve(ctx, &param))
+		resp(serv.handler.CodeActionResolve(ctx, logger, &param))
 	case "textDocument/codeLens":
 		var param CodeLensParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentCodeLens(ctx, &param))
+		resp(serv.handler.TextDocumentCodeLens(ctx, logger, &param))
 	case "codeLens/resolve":
 		var param CodeLens
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.CodeLensResolve(ctx, &param))
+		resp(serv.handler.CodeLensResolve(ctx, logger, &param))
 	case "textDocument/documentLink":
 		var param DocumentLinkParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentDocumentLink(ctx, &param))
+		resp(serv.handler.TextDocumentDocumentLink(ctx, logger, &param))
 	case "documentLink/resolve":
 		var param DocumentLink
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.DocumentLinkResolve(ctx, &param))
+		resp(serv.handler.DocumentLinkResolve(ctx, logger, &param))
 	case "textDocument/documentColor":
 		var param DocumentColorParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentDocumentColor(ctx, &param))
+		resp(serv.handler.TextDocumentDocumentColor(ctx, logger, &param))
 	case "textDocument/colorPresentation":
 		var param ColorPresentationParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentColorPresentation(ctx, &param))
+		resp(serv.handler.TextDocumentColorPresentation(ctx, logger, &param))
 	case "textDocument/formatting":
 		var param DocumentFormattingParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentFormatting(ctx, &param))
+		resp(serv.handler.TextDocumentFormatting(ctx, logger, &param))
 	case "textDocument/rangeFormatting":
 		var param DocumentRangeFormattingParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentRangeFormatting(ctx, &param))
+		resp(serv.handler.TextDocumentRangeFormatting(ctx, logger, &param))
 	case "textDocument/onTypeFormatting":
 		var param DocumentOnTypeFormattingParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentOnTypeFormatting(ctx, &param))
+		resp(serv.handler.TextDocumentOnTypeFormatting(ctx, logger, &param))
 	case "textDocument/rename":
 		var param RenameParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentRename(ctx, &param))
+		resp(serv.handler.TextDocumentRename(ctx, logger, &param))
 	case "textDocument/prepareRename":
 		var param PrepareRenameParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		// resp(serv.handler.TextDocumentPrepareRename(ctx, &param))
+		// resp(serv.handler.TextDocumentPrepareRename(ctx,logger, &param))
 		panic("unimplemented")
 	case "textDocument/foldingRange":
 		var param FoldingRangeParams
@@ -469,72 +469,72 @@ func (serv *Server) requestDispatcher(ctx context.Context, method string, req js
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentFoldingRange(ctx, &param))
+		resp(serv.handler.TextDocumentFoldingRange(ctx, logger, &param))
 	case "textDocument/selectionRange":
 		var param SelectionRangeParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentSelectionRange(ctx, &param))
+		resp(serv.handler.TextDocumentSelectionRange(ctx, logger, &param))
 	case "textDocument/prepareCallHierarchy":
 		var param CallHierarchyPrepareParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentPrepareCallHierarchy(ctx, &param))
+		resp(serv.handler.TextDocumentPrepareCallHierarchy(ctx, logger, &param))
 	case "callHierarchy/incomingCalls":
 		var param CallHierarchyIncomingCallsParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.CallHierarchyIncomingCalls(ctx, &param))
+		resp(serv.handler.CallHierarchyIncomingCalls(ctx, logger, &param))
 	case "callHierarchy/outgoingCalls":
 		var param CallHierarchyOutgoingCallsParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.CallHierarchyOutgoingCalls(ctx, &param))
+		resp(serv.handler.CallHierarchyOutgoingCalls(ctx, logger, &param))
 	case "textDocument/semanticTokens/full":
 		var param SemanticTokensParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentSemanticTokensFull(ctx, &param))
+		resp(serv.handler.TextDocumentSemanticTokensFull(ctx, logger, &param))
 	case "textDocument/semanticTokens/full/delta":
 		var param SemanticTokensDeltaParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp2(serv.handler.TextDocumentSemanticTokensFullDelta(ctx, &param))
+		resp2(serv.handler.TextDocumentSemanticTokensFullDelta(ctx, logger, &param))
 	case "textDocument/semanticTokens/range":
 		var param SemanticTokensRangeParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentSemanticTokensRange(ctx, &param))
+		resp(serv.handler.TextDocumentSemanticTokensRange(ctx, logger, &param))
 	case "workspace/semanticTokens/refresh":
-		resp(nil, serv.handler.WorkspaceSemanticTokensRefresh(ctx))
+		resp(nil, serv.handler.WorkspaceSemanticTokensRefresh(ctx, logger))
 	case "textDocument/linkedEditingRange":
 		var param LinkedEditingRangeParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentLinkedEditingRange(ctx, &param))
+		resp(serv.handler.TextDocumentLinkedEditingRange(ctx, logger, &param))
 	case "textDocument/moniker":
 		var param MonikerParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return
 		}
-		resp(serv.handler.TextDocumentMoniker(ctx, &param))
+		resp(serv.handler.TextDocumentMoniker(ctx, logger, &param))
 	default:
 		panic("unimplemented message")
 	}

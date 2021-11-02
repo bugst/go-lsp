@@ -70,7 +70,7 @@ func TestRPCConnection(t *testing.T) {
 	conn := NewConnection(
 		bufio.NewReader(strings.NewReader(testdata)),
 		output,
-		func(ctx context.Context, method string, params json.RawMessage, respCallback func(result json.RawMessage, err *ResponseError)) {
+		func(ctx context.Context, logger FunctionLogger, method string, params json.RawMessage, respCallback func(result json.RawMessage, err *ResponseError)) {
 			log := fmt.Sprintf("REQ method=%v params=%v", method, params)
 			t.Log(log)
 			resp += log + "\n"
@@ -91,7 +91,7 @@ func TestRPCConnection(t *testing.T) {
 			}
 			respCallback(NullResult, nil)
 		},
-		func(ctx context.Context, method string, params json.RawMessage) {
+		func(logger FunctionLogger, method string, params json.RawMessage) {
 			log := fmt.Sprintf("NOT method=%v params=%v", method, params)
 			t.Log(log)
 			resp += log + "\n"
