@@ -336,10 +336,10 @@ type DocumentOnTypeFormattingParams struct {
 	TextDocumentPositionParams
 
 	// The character that has been typed.
-	ch string `json:"ch,required"`
+	Ch string `json:"ch,required"`
 
 	// The format options.
-	options FormattingOptions `json:"options,required"`
+	Options FormattingOptions `json:"options,required"`
 }
 
 // Represents a collection of [completion items](#CompletionItem) to be
@@ -701,7 +701,7 @@ type Hover struct {
 //
 // @deprecated use MarkupContent instead.
 type MarkedString struct {
-	Language string `json:"language,required`
+	Language string `json:"language,required"`
 	Value    string `json:"value,required"`
 }
 
@@ -1076,8 +1076,9 @@ type CallHierarchyOutgoingCall struct {
 type SemanticTokensParams struct {
 	*WorkDoneProgressParams
 	*PartialResultParams
+
 	// The text document.
-	textDocument TextDocumentIdentifier `json:"textDocument,required"`
+	TextDocument TextDocumentIdentifier `json:"textDocument,required"`
 }
 
 type SemanticTokens struct {
@@ -1085,7 +1086,7 @@ type SemanticTokens struct {
 	// the client will include the result id in the next semantic token request.
 	// A server can then instead of computing all semantic tokens again simply
 	// send a delta.
-	ResultID string `json:"resultId,omitemty"`
+	ResultID string `json:"resultId,omitempty"`
 
 	// The actual tokens.
 	Data []int `json:"data,required"`
@@ -1104,7 +1105,7 @@ type SemanticTokensDeltaParams struct {
 }
 
 type SemanticTokensDelta struct {
-	ResultID string `json:"resultId,omitemty"`
+	ResultID string `json:"resultId,omitempty"`
 
 	// The semantic token edits to transform a previous result into a new
 	// result.
@@ -1119,7 +1120,7 @@ type SemanticTokensEdit struct {
 	DeleteCount int `json:"deleteCount,required"`
 
 	// The elements to insert.
-	Data []int `json:"data,omitemty"`
+	Data []int `json:"data,omitempty"`
 }
 
 type SemanticTokensRangeParams struct {
@@ -1145,7 +1146,7 @@ type LinkedEditingRanges struct {
 	// An optional word pattern (regular expression) that describes valid contents for
 	// the given ranges. If no pattern is provided, the client configuration's word
 	// pattern will be used.
-	WordPattern string `json:"wordPattern,omitemty"`
+	WordPattern string `json:"wordPattern,omitempty"`
 }
 
 type MonikerParams struct {
@@ -1198,5 +1199,5 @@ type Moniker struct {
 	Unique UniquenessLevel `json:"unique,required"`
 
 	// The moniker kind if known.
-	Kind MonikerKind `json:"kind,omitemty"`
+	Kind MonikerKind `json:"kind,omitempty"`
 }

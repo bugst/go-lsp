@@ -55,7 +55,7 @@ type InitializeParams struct {
 	Capabilities ClientCapabilities `json:"capabilities,required"`
 
 	// The initial trace setting. If omitted trace is disabled ('off').
-	Trace *TraceValue `json:"trace,omitempy"`
+	Trace *TraceValue `json:"trace,omitempty"`
 
 	// The workspace folders configured in the client when the server starts.
 	// This property is only available if the client supports workspace folders.

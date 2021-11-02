@@ -605,7 +605,7 @@ func DecodeServerNotificationParams(method string, req json.RawMessage) (interfa
 		return &res, json.Unmarshal(req, &res)
 	case "$/cancelRequrest":
 		panic("should not reach here")
-	case "&/logTrace":
+	case "$/logTrace":
 		var res LogTraceParams
 		return &res, json.Unmarshal(req, &res)
 	case "window/showMessage":

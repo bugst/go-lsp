@@ -997,7 +997,7 @@ type RenameClientCapabilities struct {
 	// for confirmation.
 	//
 	// @since 3.16.0
-	honorsChangeAnnotations bool `json:"honorsChangeAnnotations,omitempty"`
+	HonorsChangeAnnotations bool `json:"honorsChangeAnnotations,omitempty"`
 }
 
 type PublishDiagnosticsClientCapabilities struct {
