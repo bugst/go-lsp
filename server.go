@@ -103,6 +103,10 @@ func NewServer(in io.Reader, out io.Writer, handler ClientMessagesHandler) *Serv
 	return serv
 }
 
+func (serv *Server) SetLogger(l jsonrpc.Logger) {
+	serv.conn.SetLogger(l)
+}
+
 func (serv *Server) SetErrorHandler(handler func(e error)) {
 	serv.errorHandler = handler
 }

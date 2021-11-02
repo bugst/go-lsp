@@ -22,20 +22,27 @@ type Connection struct {
 	errorHandler        func(error)
 	requestHandler      RequestHandler
 	notificationHandler NotificationHandler
+	logger              Logger
+	loggerMutex         sync.Mutex
 
-	activeInRequests      map[string]*request
+	activeInRequests      map[string]*inRequest
 	activeInRequestsMutex sync.Mutex
 
-	activeOutRequests      map[string]chan<- *outRequest
+	activeOutRequests      map[string]*outRequest
 	activeOutRequestsMutex sync.Mutex
 	lastOutRequestsIndex   uint64
 }
 
-type request struct {
+type inRequest struct {
 	cancel func()
 }
 
 type outRequest struct {
+	resultChan chan<- *outResponse
+	method     string
+}
+
+type outResponse struct {
 	reqResult json.RawMessage
 	reqError  *ResponseError
 }
@@ -54,10 +61,17 @@ func NewConnection(in io.Reader, out io.Writer, requestHandler RequestHandler, n
 		requestHandler:      requestHandler,
 		notificationHandler: notificationHandler,
 		errorHandler:        errorHandler,
-		activeInRequests:    map[string]*request{},
-		activeOutRequests:   map[string]chan<- *outRequest{},
+		activeInRequests:    map[string]*inRequest{},
+		activeOutRequests:   map[string]*outRequest{},
+		logger:              NullLogger{},
 	}
 	return conn
+}
+
+func (c *Connection) SetLogger(l Logger) {
+	c.loggerMutex.Lock()
+	c.logger = l
+	c.loggerMutex.Unlock()
 }
 
 func (c *Connection) Run() {
@@ -112,16 +126,24 @@ func (c *Connection) handleIncomingRequest(req *RequestMessage) {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	c.activeInRequestsMutex.Lock()
-	c.activeInRequests[id] = &request{
+	c.activeInRequests[id] = &inRequest{
 		cancel: cancel,
 	}
 	c.activeInRequestsMutex.Unlock()
+
+	c.loggerMutex.Lock()
+	c.logger.LogIncomingRequest(id, req.Method, req.Params)
+	c.loggerMutex.Unlock()
 
 	c.requestHandler(ctx, req.Method, req.Params, func(result json.RawMessage, resultErr *ResponseError) {
 		c.activeInRequestsMutex.Lock()
 		c.activeInRequests[id].cancel()
 		delete(c.activeInRequests, id)
 		c.activeInRequestsMutex.Unlock()
+
+		c.loggerMutex.Lock()
+		c.logger.LogOutgoingResponse(id, req.Method, result, resultErr)
+		c.loggerMutex.Unlock()
 
 		resp := &ResponseMessage{
 			JSONRPC: "2.0",
@@ -148,19 +170,23 @@ func (c *Connection) handleIncomingNotification(notif *NotificationMessage) {
 		return
 	}
 
+	c.loggerMutex.Lock()
+	c.logger.LogIncomingNotification(notif.Method, notif.Params)
+	c.loggerMutex.Unlock()
+
 	c.notificationHandler(context.Background(), notif.Method, notif.Params)
 }
 
-func (c *Connection) handleIncomingResponse(req *ResponseMessage) {
+func (c *Connection) handleIncomingResponse(resp *ResponseMessage) {
 	var id string
-	if err := json.Unmarshal(req.ID, &id); err != nil {
-		c.errorHandler(fmt.Errorf("invalid ID in request response '%v': %w", req.ID, err))
+	if err := json.Unmarshal(resp.ID, &id); err != nil {
+		c.errorHandler(fmt.Errorf("invalid ID in request response '%v': %w", resp.ID, err))
 		c.Close()
 		return
 	}
 
 	c.activeOutRequestsMutex.Lock()
-	resultChan, ok := c.activeOutRequests[id]
+	req, ok := c.activeOutRequests[id]
 	if ok {
 		delete(c.activeOutRequests, id)
 	}
@@ -172,15 +198,19 @@ func (c *Connection) handleIncomingResponse(req *ResponseMessage) {
 		return
 	}
 
-	resultChan <- &outRequest{
-		reqResult: req.Result,
-		reqError:  req.Error,
+	req.resultChan <- &outResponse{
+		reqResult: resp.Result,
+		reqError:  resp.Error,
 	}
 }
 
 func (c *Connection) cancelIncomingRequest(id json.RawMessage) {
 	c.activeInRequestsMutex.Lock()
 	if req, ok := c.activeInRequests[string(id)]; ok {
+		c.loggerMutex.Lock()
+		c.logger.LogIncomingCancelRequest(string(id))
+		c.loggerMutex.Unlock()
+
 		req.cancel()
 	}
 	c.activeInRequestsMutex.Unlock()
@@ -203,11 +233,18 @@ func (c *Connection) SendRequest(ctx context.Context, method string, params json
 		Params:  params,
 	}
 
-	resultChan := make(chan *outRequest, 1)
+	c.loggerMutex.Lock()
+	c.logger.LogOutgoingRequest(id, method, params)
+	c.loggerMutex.Unlock()
+
+	resultChan := make(chan *outResponse, 1)
 	c.activeOutRequestsMutex.Lock()
 	err = c.send(req)
 	if err == nil {
-		c.activeOutRequests[id] = resultChan
+		c.activeOutRequests[id] = &outRequest{
+			resultChan: resultChan,
+			method:     method,
+		}
 	}
 	c.activeOutRequestsMutex.Unlock()
 	if err != nil {
@@ -215,7 +252,11 @@ func (c *Connection) SendRequest(ctx context.Context, method string, params json
 	}
 
 	// Wait the response or send cancel request if requested from context
+	var result *outResponse
 	select {
+	case result = <-resultChan:
+		// got result, do nothing
+
 	case <-ctx.Done():
 		c.activeOutRequestsMutex.Lock()
 		_, active := c.activeOutRequests[id]
@@ -225,18 +266,30 @@ func (c *Connection) SendRequest(ctx context.Context, method string, params json
 				// should never happen
 				panic("internal error: failed json encoding")
 			} else {
+				c.loggerMutex.Lock()
+				c.logger.LogOutgoingCancelRequest(id)
+				c.loggerMutex.Unlock()
+
 				_ = c.SendNotification("$/cancelRequest", notif) // ignore error (it won't matter anyway)
 			}
 		}
-	case result := <-resultChan:
-		return result.reqResult, result.reqError, nil
+
+		// After cancelation wait for result...
+		result = <-resultChan
 	}
 
-	result := <-resultChan
+	c.loggerMutex.Lock()
+	c.logger.LogIncomingResponse(id, method, result.reqResult, result.reqError)
+	c.loggerMutex.Unlock()
+
 	return result.reqResult, result.reqError, nil
 }
 
 func (c *Connection) SendNotification(method string, params json.RawMessage) error {
+	c.loggerMutex.Lock()
+	c.logger.LogOutgoingNotification(method, params)
+	c.loggerMutex.Unlock()
+
 	notif := NotificationMessage{
 		JSONRPC: "2.0",
 		Method:  method,

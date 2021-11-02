@@ -59,6 +59,10 @@ func NewClient(in io.Reader, out io.Writer, handler ServerMessagesHandler) *Clie
 	return client
 }
 
+func (client *Client) SetLogger(l jsonrpc.Logger) {
+	client.conn.SetLogger(l)
+}
+
 func (client *Client) SetErrorHandler(handler func(e error)) {
 	client.errorHandler = handler
 }
