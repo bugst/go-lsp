@@ -85,11 +85,6 @@ type Server struct {
 	errorHandler func(e error)
 }
 
-// ServerHandler is an LSP Server message handler
-type ServerHandler interface {
-	Initialize(ctx context.Context, conn jsonrpc.Connection, params InitializeParams)
-}
-
 func NewServer(in io.Reader, out io.Writer, handler ClientMessagesHandler) *Server {
 	serv := &Server{
 		errorHandler: func(e error) {},

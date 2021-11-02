@@ -40,11 +40,6 @@ type Client struct {
 	errorHandler func(e error)
 }
 
-// ClientHandler is an LSP Client message handler
-type ClientHandler interface {
-	Initialize(ctx context.Context, conn jsonrpc.Connection, params InitializeParams)
-}
-
 func NewClient(in io.Reader, out io.Writer, handler ServerMessagesHandler) *Client {
 	client := &Client{
 		errorHandler: func(e error) {},
