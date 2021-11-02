@@ -161,6 +161,9 @@ func (c *Connection) handleIncomingResponse(req *ResponseMessage) {
 
 	c.activeOutRequestsMutex.Lock()
 	resultChan, ok := c.activeOutRequests[id]
+	if ok {
+		delete(c.activeOutRequests, id)
+	}
 	c.activeOutRequestsMutex.Unlock()
 
 	if !ok {
@@ -169,7 +172,6 @@ func (c *Connection) handleIncomingResponse(req *ResponseMessage) {
 		return
 	}
 
-	delete(c.activeOutRequests, id)
 	resultChan <- &outRequest{
 		reqResult: req.Result,
 		reqError:  req.Error,
