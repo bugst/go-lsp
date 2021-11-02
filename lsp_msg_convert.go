@@ -548,7 +548,7 @@ func DecodeClientNotificationParams(method string, req json.RawMessage) (interfa
 	case "$/cancelRequrest":
 		panic("should not reach here")
 	case "initialized":
-		var res InitializeParams
+		var res InitializedParams
 		return &res, json.Unmarshal(req, &res)
 	case "exit":
 		return nil, nil

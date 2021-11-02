@@ -61,7 +61,7 @@ type ClientMessagesHandler interface {
 
 	Progress(jsonrpc.FunctionLogger, *ProgressParams)
 	// CancelRequrest(*jsonrpc.CancelParams) - automatically handled by the rpc library
-	Initialized(jsonrpc.FunctionLogger, *InitializeParams)
+	Initialized(jsonrpc.FunctionLogger, *InitializedParams)
 	Exit(jsonrpc.FunctionLogger)
 	SetTrace(jsonrpc.FunctionLogger, *SetTraceParams)
 	WindowWorkDoneProgressCancel(jsonrpc.FunctionLogger, *WorkDoneProgressCancelParams)
@@ -122,7 +122,7 @@ func (serv *Server) notificationDispatcher(logger jsonrpc.FunctionLogger, method
 	case "$/cancelRequrest":
 		panic("should not reach here")
 	case "initialized":
-		var param InitializeParams
+		var param InitializedParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
 			return

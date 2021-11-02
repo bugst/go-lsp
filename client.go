@@ -738,7 +738,7 @@ func (client *Client) Progress(param *ProgressParams) error {
 	return client.conn.SendNotification("$/progress", EncodeMessage(param))
 }
 
-func (client *Client) Initialized(param *InitializeParams) error {
+func (client *Client) Initialized(param *InitializedParams) error {
 	return client.conn.SendNotification("initialized", EncodeMessage(param))
 }
 
