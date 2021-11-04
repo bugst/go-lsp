@@ -1,6 +1,8 @@
 package lsp
 
 import (
+	"fmt"
+
 	"go.bug.st/json"
 	"go.bug.st/lsp/jsonrpc"
 )
@@ -91,7 +93,22 @@ type WorkDoneProgressBegin struct {
 	//
 	// The value should be steadily rising. Clients are free to ignore values
 	// that are not following this rule. The value range is [0, 100]
-	Percentage int `json:"percentage,omitempty"`
+	Percentage *float64 `json:"percentage,omitempty"`
+}
+
+func (p WorkDoneProgressBegin) String() string {
+	res := "BEGIN"
+	if p.Cancellable {
+		res += " (cancellable)"
+	}
+	res += " " + p.Title
+	if p.Message != "" {
+		res += ", " + p.Message
+	}
+	if p.Percentage != nil {
+		res += fmt.Sprintf(", %1.1f%%", *p.Percentage)
+	}
+	return res
 }
 
 type WorkDoneProgressReport struct {
@@ -117,7 +134,21 @@ type WorkDoneProgressReport struct {
 	//
 	// The value should be steadily rising. Clients are free to ignore values
 	// that are not following this rule. The value range is [0, 100]
-	Percentage *int `json:"percentage,omitempty"`
+	Percentage *float64 `json:"percentage,omitempty"`
+}
+
+func (p WorkDoneProgressReport) String() string {
+	res := "REPORT"
+	if p.Cancellable {
+		res += " (cancellable)"
+	}
+	if p.Message != "" {
+		res += ", " + p.Message
+	}
+	if p.Percentage != nil {
+		res += fmt.Sprintf(", %1.1f%%", *p.Percentage)
+	}
+	return res
 }
 
 type WorkDoneProgressEnd struct {
@@ -126,6 +157,14 @@ type WorkDoneProgressEnd struct {
 	// Optional, a final message indicating to for example indicate the outcome
 	// of the operation.
 	Message string `json:"message,omitempty"`
+}
+
+func (p WorkDoneProgressEnd) String() string {
+	res := "END "
+	if p.Message != "" {
+		res += ", " + p.Message
+	}
+	return res
 }
 
 // General parameters to register for a capability.
