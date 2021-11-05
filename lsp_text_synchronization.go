@@ -53,7 +53,7 @@ type VersionedTextDocumentIdentifier struct {
 	//
 	// The version number of a document will increase after each change,
 	// including undo/redo. The number doesn't need to be consecutive.
-	Version int `json:"version.required"`
+	Version int `json:"version,required"`
 }
 
 func (v VersionedTextDocumentIdentifier) String() string {
