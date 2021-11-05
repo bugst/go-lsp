@@ -75,8 +75,12 @@ type TextDocumentContentChangeEvent struct {
 	Text string `json:"text,required"`
 }
 
-func (change *TextDocumentContentChangeEvent) String() string {
-	return fmt.Sprintf("%s -> %s", change.Range, strconv.Quote(change.Text))
+func (change TextDocumentContentChangeEvent) String() string {
+	l := ""
+	if change.RangeLength != nil {
+		l = fmt.Sprintf(" (len=%d)", *change.RangeLength)
+	}
+	return fmt.Sprintf("%s%s -> %s", change.Range, l, strconv.Quote(change.Text))
 }
 
 type TextDocumentItem struct {
