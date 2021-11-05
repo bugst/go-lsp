@@ -73,6 +73,13 @@ func TestJSONMarshalUnmarshal(t *testing.T) {
 	data, err = json.Marshal(d)
 	require.NoError(t, err)
 	require.Equal(t, `"file:///%F0%9F%98%9B"`, string(data))
+
+	var m map[DocumentURI]string
+	err = json.Unmarshal([]byte(`{ "file:///home/users/file.txt": "a file!" }`), &m)
+	require.NoError(t, err)
+	u, err := NewDocumentURIFromURL("file:///home/users/file.txt")
+	require.NoError(t, err)
+	require.Equal(t, "a file!", m[u])
 }
 
 func TestNotInoFromSourceMapper(t *testing.T) {

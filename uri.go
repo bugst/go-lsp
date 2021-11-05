@@ -94,7 +94,21 @@ func (uri *DocumentURI) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+func (uri *DocumentURI) UnmarshalText(text []byte) error {
+	newDocURI, err := NewDocumentURIFromURL(string(text))
+	if err != nil {
+		return fmt.Errorf("parsing DocumentURI: %s", err)
+	}
+
+	*uri = newDocURI
+	return nil
+}
+
 // MarshalJSON implements json.Marshaller interface
 func (uri DocumentURI) MarshalJSON() ([]byte, error) {
 	return json.Marshal(uri.url.String())
+}
+
+func (uri DocumentURI) MarshalText() (text []byte, err error) {
+	return []byte(uri.String()), nil
 }
