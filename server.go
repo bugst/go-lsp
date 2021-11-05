@@ -539,24 +539,24 @@ func (serv *Server) requestDispatcher(ctx context.Context, logger jsonrpc.Functi
 
 func (serv *Server) WindowShowMessageRequest(ctx context.Context, param *ShowMessageRequestParams) (*MessageActionItem, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := serv.conn.SendRequest(ctx, "window/showMessageRequest", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: the selected MessageActionItem | null if none got selected
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res MessageActionItem
-	return &res, respErr, json.Unmarshal(resp, &res)
+	return &res, nil, json.Unmarshal(resp, &res)
 }
 
 func (serv *Server) WindowShowDocument(ctx context.Context, param *ShowDocumentParams) (*ShowDocumentResult, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := serv.conn.SendRequest(ctx, "window/showDocument", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	var res ShowDocumentResult
-	return &res, respErr, json.Unmarshal(resp, &res)
+	return &res, nil, json.Unmarshal(resp, &res)
 }
 
 func (serv *Server) WindowWorkDoneProgressCreate(ctx context.Context, param *WorkDoneProgressCreateParams) (*jsonrpc.ResponseError, error) {
@@ -576,34 +576,34 @@ func (serv *Server) ClientUnregisterCapability(ctx context.Context, param *Unreg
 
 func (serv *Server) WorkspaceWorkspaceFolders(ctx context.Context) ([]WorkspaceFolder, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := serv.conn.SendRequest(ctx, "workspace/workspaceFolders", EncodeMessage(jsonrpc.NullResult))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: WorkspaceFolder[] | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res []WorkspaceFolder
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 func (serv *Server) WorkspaceConfiguration(ctx context.Context, param *ConfigurationParams) ([]json.RawMessage, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := serv.conn.SendRequest(ctx, "workspace/configuration", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: any[]
 	var res []json.RawMessage
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 func (serv *Server) WorkspaceApplyEdit(ctx context.Context, param *ApplyWorkspaceEditParams) (*ApplyWorkspaceEditResult, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := serv.conn.SendRequest(ctx, "workspace/applyEdit", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	var res ApplyWorkspaceEditResult
-	return &res, respErr, json.Unmarshal(resp, &res)
+	return &res, nil, json.Unmarshal(resp, &res)
 }
 
 func (serv *Server) WorkspaceCodeLensRefresh(ctx context.Context) (*jsonrpc.ResponseError, error) {

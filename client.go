@@ -179,11 +179,11 @@ func (client *Client) requestDispatcher(ctx context.Context, logger jsonrpc.Func
 
 func (client *Client) Initialize(ctx context.Context, param *InitializeParams) (*InitializeResult, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "initialize", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	var res InitializeResult
-	return &res, respErr, json.Unmarshal(resp, &res)
+	return &res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) Shutdown(ctx context.Context) (*jsonrpc.ResponseError, error) {
@@ -193,15 +193,15 @@ func (client *Client) Shutdown(ctx context.Context) (*jsonrpc.ResponseError, err
 
 func (client *Client) WorkspaceSymbol(ctx context.Context, param *WorkspaceSymbolParams) ([]SymbolInformation, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "workspace/symbol", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: SymbolInformation[] | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res []SymbolInformation
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) WorkspaceExecuteCommand(ctx context.Context, param *ExecuteCommandParams) (json.RawMessage, *jsonrpc.ResponseError, error) {
@@ -210,60 +210,60 @@ func (client *Client) WorkspaceExecuteCommand(ctx context.Context, param *Execut
 
 func (client *Client) WorkspaceWillCreateFiles(ctx context.Context, param *CreateFilesParams) (*WorkspaceEdit, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "workspace/willCreateFiles", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: WorkspaceEdit | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res WorkspaceEdit
-	return &res, respErr, json.Unmarshal(resp, &res)
+	return &res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) WorkspaceWillRenameFiles(ctx context.Context, param *RenameFilesParams) (*WorkspaceEdit, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "workspace/willRenameFiles", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: WorkspaceEdit | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res WorkspaceEdit
-	return &res, respErr, json.Unmarshal(resp, &res)
+	return &res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) WorkspaceWillDeleteFiles(ctx context.Context, param *DeleteFilesParams) (*WorkspaceEdit, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "workspace/willDeleteFiles", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: WorkspaceEdit | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res WorkspaceEdit
-	return &res, respErr, json.Unmarshal(resp, &res)
+	return &res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentWillSaveWaitUntil(ctx context.Context, param *WillSaveTextDocumentParams) ([]TextEdit, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/willSaveWaitUntil", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: TextEdit[] | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res []TextEdit
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentCompletion(ctx context.Context, param *CompletionParams) (*CompletionList, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/completion", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: CompletionItem[] | CompletionList | null.
 	// If a CompletionItem[] is provided it is interpreted to be complete. So it is the same as { isIncomplete: false, items }
@@ -272,57 +272,57 @@ func (client *Client) TextDocumentCompletion(ctx context.Context, param *Complet
 		return &CompletionList{
 			IsIncomplete: false,
 			Items:        completionItems,
-		}, respErr, nil
+		}, nil, nil
 	}
 	if string(resp) == "null" {
 		return &CompletionList{
 			IsIncomplete: false,
 			Items:        []CompletionItem{},
-		}, respErr, nil
+		}, nil, nil
 	}
 	var res CompletionList
-	return &res, respErr, json.Unmarshal(resp, &res)
+	return &res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) CompletionItemResolve(ctx context.Context, param *CompletionItem) (*CompletionItem, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "completionItem/resolve", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	var res CompletionItem
-	return &res, respErr, json.Unmarshal(resp, &res)
+	return &res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentHover(ctx context.Context, param *HoverParams) (*Hover, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/hover", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: Hover | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res Hover
-	return &res, respErr, json.Unmarshal(resp, &res)
+	return &res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentSignatureHelp(ctx context.Context, param *SignatureHelpParams) (*SignatureHelp, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/signatureHelp", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: SignatureHelp | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res SignatureHelp
-	return &res, respErr, json.Unmarshal(resp, &res)
+	return &res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentDeclaration(ctx context.Context, param *DeclarationParams) ([]Location, []LocationLink, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/declaration", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, nil, respErr, err
 	}
 	// result: Location | Location[] | LocationLink[] |null
 	if string(resp) == "null" {
@@ -330,264 +330,263 @@ func (client *Client) TextDocumentDeclaration(ctx context.Context, param *Declar
 	}
 	var location Location
 	if err := json.Unmarshal(resp, &location); err == nil {
-		return []Location{location}, nil, respErr, nil
+		return []Location{location}, nil, nil, nil
 	}
 	var locations []Location
 	if err := json.Unmarshal(resp, &locations); err == nil {
-		return locations, nil, respErr, nil
+		return locations, nil, nil, nil
 	}
 	var locationLinks []LocationLink
-	return nil, locationLinks, respErr, json.Unmarshal(resp, &locationLinks)
+	return nil, locationLinks, nil, json.Unmarshal(resp, &locationLinks)
 }
 
 func (client *Client) TextDocumentDefinition(ctx context.Context, param *DefinitionParams) ([]Location, []LocationLink, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/definition", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, nil, respErr, err
 	}
 	// result: Location | Location[] | LocationLink[] |null
 	if string(resp) == "null" {
-		return nil, nil, respErr, nil
+		return nil, nil, nil, nil
 	}
 	var location Location
 	if err := json.Unmarshal(resp, &location); err == nil {
-		return []Location{location}, nil, respErr, nil
+		return []Location{location}, nil, nil, nil
 	}
 	var locations []Location
 	if err := json.Unmarshal(resp, &locations); err == nil {
-		return locations, nil, respErr, nil
+		return locations, nil, nil, nil
 	}
 	var locationLinks []LocationLink
-	return nil, locationLinks, respErr, json.Unmarshal(resp, &locationLinks)
+	return nil, locationLinks, nil, json.Unmarshal(resp, &locationLinks)
 }
 
 func (client *Client) TextDocumentTypeDefinition(ctx context.Context, param *TypeDefinitionParams) ([]Location, []LocationLink, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/typeDefinition", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, nil, respErr, err
 	}
 	// result: Location | Location[] | LocationLink[] |null
 	if string(resp) == "null" {
-		return nil, nil, respErr, nil
+		return nil, nil, nil, nil
 	}
 	var location Location
 	if err := json.Unmarshal(resp, &location); err == nil {
-		return []Location{location}, nil, respErr, nil
+		return []Location{location}, nil, nil, nil
 	}
 	var locations []Location
 	if err := json.Unmarshal(resp, &locations); err == nil {
-		return locations, nil, respErr, nil
+		return locations, nil, nil, nil
 	}
 	var locationLinks []LocationLink
-	return nil, locationLinks, respErr, json.Unmarshal(resp, &locationLinks)
+	return nil, locationLinks, nil, json.Unmarshal(resp, &locationLinks)
 }
 
 func (client *Client) TextDocumentImplementation(ctx context.Context, param *ImplementationParams) ([]Location, []LocationLink, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/implementation", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, nil, respErr, err
 	}
 	// result: Location | Location[] | LocationLink[] |null
 	if string(resp) == "null" {
-		return nil, nil, respErr, nil
+		return nil, nil, nil, nil
 	}
 	var location Location
 	if err := json.Unmarshal(resp, &location); err == nil {
-		return []Location{location}, nil, respErr, nil
+		return []Location{location}, nil, nil, nil
 	}
 	var locations []Location
 	if err := json.Unmarshal(resp, &locations); err == nil {
-		return locations, nil, respErr, nil
+		return locations, nil, nil, nil
 	}
 	var locationLinks []LocationLink
-	return nil, locationLinks, respErr, json.Unmarshal(resp, &locationLinks)
+	return nil, locationLinks, nil, json.Unmarshal(resp, &locationLinks)
 }
 
 func (client *Client) TextDocumentReferences(ctx context.Context, param *ReferenceParams) ([]Location, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/references", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: Location[] | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res []Location
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentDocumentHighlight(ctx context.Context, param *DocumentHighlightParams) ([]DocumentHighlight, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/documentHighlight", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: DocumentHighlight[] | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res []DocumentHighlight
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentDocumentSymbol(ctx context.Context, param *DocumentSymbolParams) ([]DocumentSymbol, []SymbolInformation, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/documentSymbol", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, nil, respErr, err
 	}
 	// result: DocumentSymbol[] | SymbolInformation[] | null
 	if string(resp) == "null" {
-		return nil, nil, respErr, nil
+		return nil, nil, nil, nil
 	}
 	var documentSymbols []DocumentSymbol
 	if err := json.Unmarshal(resp, &documentSymbols); err == nil {
-		return documentSymbols, nil, respErr, nil
+		return documentSymbols, nil, nil, nil
 	}
 	var symbolInfomation []SymbolInformation
-	return nil, symbolInfomation, respErr, json.Unmarshal(resp, &symbolInfomation)
-
+	return nil, symbolInfomation, nil, json.Unmarshal(resp, &symbolInfomation)
 }
 
 func (client *Client) TextDocumentCodeAction(ctx context.Context, param *CodeActionParams) ([]CommandOrCodeAction, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/codeAction", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: (Command | CodeAction)[] | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res []CommandOrCodeAction
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) CodeActionResolve(ctx context.Context, param *CodeAction) (*CodeAction, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "codeAction/resolve", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	var res CodeAction
-	return &res, respErr, json.Unmarshal(resp, &res)
+	return &res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentCodeLens(ctx context.Context, param *CodeLensParams) ([]CodeLens, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/codeLens", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: CodeLens[] | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res []CodeLens
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) CodeLensResolve(ctx context.Context, param *CodeLens) (*CodeLens, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "codeLens/resolve", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	var res CodeLens
-	return &res, respErr, json.Unmarshal(resp, &res)
+	return &res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentDocumentLink(ctx context.Context, param *DocumentLinkParams) ([]DocumentLink, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/documentLink", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: DocumentLink[] | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res []DocumentLink
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) DocumentLinkResolve(ctx context.Context, param *DocumentLink) (*DocumentLink, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "documentLink/resolve", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	var res DocumentLink
-	return &res, respErr, json.Unmarshal(resp, &res)
+	return &res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentDocumentColor(ctx context.Context, param *DocumentColorParams) ([]ColorInformation, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/documentColor", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	var res []ColorInformation
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentColorPresentation(ctx context.Context, param *ColorPresentationParams) ([]ColorPresentation, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/colorPresentation", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	var res []ColorPresentation
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentFormatting(ctx context.Context, param *DocumentFormattingParams) ([]TextEdit, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/formatting", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: TextEdit[] | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res []TextEdit
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentRangeFormatting(ctx context.Context, param *DocumentRangeFormattingParams) ([]TextEdit, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/rangeFormatting", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: TextEdit[] | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res []TextEdit
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentOnTypeFormatting(ctx context.Context, param *DocumentOnTypeFormattingParams) ([]TextEdit, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/onTypeFormatting", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: TextEdit[] | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res []TextEdit
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentRename(ctx context.Context, param *RenameParams) (*WorkspaceEdit, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/rename", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: WorkspaceEdit | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res WorkspaceEdit
-	return &res, respErr, json.Unmarshal(resp, &res)
+	return &res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentPrepareRename(ctx context.Context, param *PrepareRenameParams) (json.RawMessage, *jsonrpc.ResponseError, error) {
 	panic("unimplemented")
 	// _, _, err := client.conn.SendRequest(ctx, "textDocument/prepareRename", EncodeMessage(param))
-	// if err != nil {
-	// 	return nil, nil, err
+	// if err != nil || respErr!=nil{
+	// 	return nil, respErr, err
 	// }
 	// // result: Range | { range: Range, placeholder: string } | { defaultBehavior: boolean } | null
 	// return nil, nil, nil
@@ -595,110 +594,110 @@ func (client *Client) TextDocumentPrepareRename(ctx context.Context, param *Prep
 
 func (client *Client) TextDocumentFoldingRange(ctx context.Context, param *FoldingRangeParams) ([]FoldingRange, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/foldingRange", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: FoldingRange[] | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res []FoldingRange
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentSelectionRange(ctx context.Context, param *SelectionRangeParams) ([]SelectionRange, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/selectionRange", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: SelectionRange[] | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res []SelectionRange
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentPrepareCallHierarchy(ctx context.Context, param *CallHierarchyPrepareParams) ([]CallHierarchyItem, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/prepareCallHierarchy", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: CallHierarchyItem[] | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res []CallHierarchyItem
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) CallHierarchyIncomingCalls(ctx context.Context, param *CallHierarchyIncomingCallsParams) ([]CallHierarchyIncomingCall, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "callHierarchy/incomingCalls", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: CallHierarchyIncomingCall[] | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res []CallHierarchyIncomingCall
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) CallHierarchyOutgoingCalls(ctx context.Context, param *CallHierarchyOutgoingCallsParams) ([]CallHierarchyOutgoingCall, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "callHierarchy/outgoingCalls", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: CallHierarchyOutgoingCall[] | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res []CallHierarchyOutgoingCall
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentSemanticTokensFull(ctx context.Context, param *SemanticTokensParams) (*SemanticTokens, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/semanticTokens/full", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: SemanticTokens | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res SemanticTokens
-	return &res, respErr, json.Unmarshal(resp, &res)
+	return &res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentSemanticTokensFullDelta(ctx context.Context, param *SemanticTokensDeltaParams) (*SemanticTokens, *SemanticTokensDelta, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/semanticTokens/full/delta", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, nil, respErr, err
 	}
 	// result: SemanticTokens | SemanticTokensDelta | null
 	if string(resp) == "null" {
-		return nil, nil, respErr, nil
+		return nil, nil, nil, nil
 	}
 	var delta SemanticTokensDelta
 	if err := json.Unmarshal(resp, &delta); err == nil {
-		return nil, &delta, respErr, nil
+		return nil, &delta, nil, nil
 	}
 	var res SemanticTokens
-	return &res, nil, respErr, json.Unmarshal(resp, &res)
+	return &res, nil, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentSemanticTokensRange(ctx context.Context, param *SemanticTokensRangeParams) (*SemanticTokens, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/semanticTokens/range", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: SemanticTokens | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res SemanticTokens
-	return &res, respErr, json.Unmarshal(resp, &res)
+	return &res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) WorkspaceSemanticTokensRefresh(ctx context.Context) (*jsonrpc.ResponseError, error) {
@@ -708,28 +707,28 @@ func (client *Client) WorkspaceSemanticTokensRefresh(ctx context.Context) (*json
 
 func (client *Client) TextDocumentLinkedEditingRange(ctx context.Context, param *LinkedEditingRangeParams) (*LinkedEditingRanges, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/linkedEditingRange", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: LinkedEditingRanges | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res LinkedEditingRanges
-	return &res, respErr, json.Unmarshal(resp, &res)
+	return &res, nil, json.Unmarshal(resp, &res)
 }
 
 func (client *Client) TextDocumentMoniker(ctx context.Context, param *MonikerParams) ([]Moniker, *jsonrpc.ResponseError, error) {
 	resp, respErr, err := client.conn.SendRequest(ctx, "textDocument/moniker", EncodeMessage(param))
-	if err != nil {
-		return nil, nil, err
+	if err != nil || respErr != nil {
+		return nil, respErr, err
 	}
 	// result: Moniker[] | null
 	if string(resp) == "null" {
-		return nil, respErr, nil
+		return nil, nil, nil
 	}
 	var res []Moniker
-	return res, respErr, json.Unmarshal(resp, &res)
+	return res, nil, json.Unmarshal(resp, &res)
 }
 
 // Notifications to Server
