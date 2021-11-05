@@ -625,7 +625,7 @@ type WorkspaceEdit struct {
 	// Holds changes to existing resources.
 
 	// changes?: { [uri: DocumentUri]: TextEdit[]; };
-	Changes map[DocumentURI][]TextEdit `json:"changes,omitempty"` // TODO: I don't think this is correct at all
+	Changes map[DocumentURI][]TextEdit `json:"changes,omitempty"`
 
 	// Depending on the client capability
 	// `workspace.workspaceEdit.resourceOperations` document changes are either
@@ -653,10 +653,11 @@ type WorkspaceEdit struct {
 	// `workspace.changeAnnotationSupport`.
 	//
 	// @since 3.16.0
-
+	//
 	// changeAnnotations?: {
 	// 	[id: string /* ChangeAnnotationIdentifier */]: ChangeAnnotation;
 	// };
+	ChangeAnnotations map[string]ChangeAnnotation `json:"changeAnnotations,omitempty"`
 }
 
 // Additional information that describes document changes.

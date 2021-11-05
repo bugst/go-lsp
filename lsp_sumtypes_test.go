@@ -71,4 +71,46 @@ func TestSumTypes(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, string(jsonIn), string(data))
 	}
+
+	// some real-world examples
+	{
+		jsonIn := json.RawMessage(`
+		[
+			{
+				"diagnostics": [
+					{
+						"code":"undeclared_var_use_suggest",
+						"message":"Use of undeclared identifier 'ads'; did you mean 'abs'? (fix available)",
+						"range": {
+							"end":  {"character":5, "line":14},
+							"start":{"character":2, "line":14}
+						},
+						"severity":1,
+						"source":"clang"
+					}
+				],
+				"edit": {
+					"changes": {
+						"file:///tmp/arduino-language-server616865191/sketch/Blink.ino.cpp": [
+							{
+								"newText":"abs",
+								"range": {
+									"end":  {"character":5, "line":14},
+									"start":{"character":2, "line":14}
+								}
+							}
+						]
+					}
+				},
+				"isPreferred":true,
+				"kind":"quickfix",
+				"title":"change 'ads' to 'abs'"
+			}
+		]`)
+		res, err := DecodeServerResponseResult("textDocument/codeAction", jsonIn)
+		require.NoError(t, err)
+		require.IsType(t, []CommandOrCodeAction{}, res)
+		resArray := res.([]CommandOrCodeAction)
+		require.IsType(t, CodeAction{}, resArray[0].Get())
+	}
 }
