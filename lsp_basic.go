@@ -41,33 +41,23 @@ type ProgressParams struct {
 }
 
 func (p *ProgressParams) TryToDecodeWellKnownValues() interface{} {
-	var disc struct {
-		Kind string `json:"kind"`
+	var begin WorkDoneProgressBegin
+	if err := json.Unmarshal(p.Value, &begin); err == nil {
+		return begin
 	}
-	if err := json.Unmarshal(p.Value, &disc); err == nil {
-		switch disc.Kind {
-		case "begin":
-			var res WorkDoneProgressBegin
-			if err := json.Unmarshal(p.Value, &res); err == nil {
-				return res
-			}
-		case "report":
-			var res WorkDoneProgressReport
-			if err := json.Unmarshal(p.Value, &res); err == nil {
-				return res
-			}
-		case "end":
-			var res WorkDoneProgressEnd
-			if err := json.Unmarshal(p.Value, &res); err == nil {
-				return res
-			}
-		}
+	var report WorkDoneProgressReport
+	if err := json.Unmarshal(p.Value, &report); err == nil {
+		return report
+	}
+	var end WorkDoneProgressEnd
+	if err := json.Unmarshal(p.Value, &end); err == nil {
+		return end
 	}
 	return nil
 }
 
 type WorkDoneProgressBegin struct {
-	Kind string `json:"kind,required"` /* 'begin' */
+	// Kind string `json:"kind,required"` /* automatically set to 'begin' */
 
 	// Mandatory title of the progress operation. Used to briefly inform about
 	// the kind of operation being performed.
@@ -96,6 +86,41 @@ type WorkDoneProgressBegin struct {
 	Percentage *float64 `json:"percentage,omitempty"`
 }
 
+func (p *WorkDoneProgressBegin) UnmarshalJSON(data []byte) error {
+	var temp struct {
+		Kind string `json:"kind,required"`
+	}
+	if err := json.Unmarshal(data, &temp); err != nil {
+		return err
+	}
+	if temp.Kind != "begin" {
+		return fmt.Errorf("invalid Kind field value '%s': must be 'begin'", temp.Kind)
+	}
+	type __ WorkDoneProgressBegin
+	var res __
+	if err := json.Unmarshal(data, &res); err != nil {
+		return err
+	}
+	*p = WorkDoneProgressBegin(res)
+	return nil
+}
+
+func (p WorkDoneProgressBegin) MarshalJSON() ([]byte, error) {
+	var temp struct {
+		Kind        string   `json:"kind,required"`
+		Title       string   `json:"title,required"`
+		Cancellable bool     `json:"cancellable,omitempty"`
+		Message     string   `json:"message,omitempty"`
+		Percentage  *float64 `json:"percentage,omitempty"`
+	}
+	temp.Kind = "begin"
+	temp.Title = p.Title
+	temp.Cancellable = p.Cancellable
+	temp.Message = p.Message
+	temp.Percentage = p.Percentage
+	return json.Marshal(temp)
+}
+
 func (p WorkDoneProgressBegin) String() string {
 	res := "BEGIN"
 	if p.Cancellable {
@@ -112,7 +137,7 @@ func (p WorkDoneProgressBegin) String() string {
 }
 
 type WorkDoneProgressReport struct {
-	Kind string `json:"kind,required"` // 'report'
+	// Kind string `json:"kind,required"` /* automatically set to 'report' */
 
 	// Controls enablement state of a cancel button. This property is only valid
 	// if a cancel button got requested in the `WorkDoneProgressBegin` payload.
@@ -137,6 +162,39 @@ type WorkDoneProgressReport struct {
 	Percentage *float64 `json:"percentage,omitempty"`
 }
 
+func (p *WorkDoneProgressReport) UnmarshalJSON(data []byte) error {
+	var temp struct {
+		Kind string `json:"kind,required"`
+	}
+	if err := json.Unmarshal(data, &temp); err != nil {
+		return err
+	}
+	if temp.Kind != "report" {
+		return fmt.Errorf("invalid Kind field value '%s': must be 'report'", temp.Kind)
+	}
+	type __ WorkDoneProgressReport
+	var res __
+	if err := json.Unmarshal(data, &res); err != nil {
+		return err
+	}
+	*p = WorkDoneProgressReport(res)
+	return nil
+}
+
+func (p WorkDoneProgressReport) MarshalJSON() ([]byte, error) {
+	var temp struct {
+		Kind        string   `json:"kind,required"`
+		Cancellable bool     `json:"cancellable,omitempty"`
+		Message     string   `json:"message,omitempty"`
+		Percentage  *float64 `json:"percentage,omitempty"`
+	}
+	temp.Kind = "report"
+	temp.Cancellable = p.Cancellable
+	temp.Message = p.Message
+	temp.Percentage = p.Percentage
+	return json.Marshal(temp)
+}
+
 func (p WorkDoneProgressReport) String() string {
 	res := "REPORT"
 	if p.Cancellable {
@@ -152,11 +210,40 @@ func (p WorkDoneProgressReport) String() string {
 }
 
 type WorkDoneProgressEnd struct {
-	Kind string `json:"kind,required"` // 'end'
+	// Kind string `json:"kind,required"` /* automatically set to 'end' */
 
 	// Optional, a final message indicating to for example indicate the outcome
 	// of the operation.
 	Message string `json:"message,omitempty"`
+}
+
+func (p *WorkDoneProgressEnd) UnmarshalJSON(data []byte) error {
+	var temp struct {
+		Kind string `json:"kind,required"`
+	}
+	if err := json.Unmarshal(data, &temp); err != nil {
+		return err
+	}
+	if temp.Kind != "end" {
+		return fmt.Errorf("invalid Kind field value '%s': must be 'end'", temp.Kind)
+	}
+	type __ WorkDoneProgressEnd
+	var res __
+	if err := json.Unmarshal(data, &res); err != nil {
+		return err
+	}
+	*p = WorkDoneProgressEnd(res)
+	return nil
+}
+
+func (p WorkDoneProgressEnd) MarshalJSON() ([]byte, error) {
+	var temp struct {
+		Kind    string `json:"kind,required"`
+		Message string `json:"message,omitempty"`
+	}
+	temp.Kind = "end"
+	temp.Message = p.Message
+	return json.Marshal(temp)
 }
 
 func (p WorkDoneProgressEnd) String() string {
