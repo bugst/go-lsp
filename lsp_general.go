@@ -88,13 +88,15 @@ type InitializeResult struct {
 	// Information about the server.
 	//
 	// @since 3.15.0
-	ServerInfo *struct {
-		// The name of the server as defined by the server.
-		Name string `json:"name,required"`
+	ServerInfo *InitializeResultServerInfo `json:"serverInfo,omitempty"`
+}
 
-		// The server's version as defined by the server.
-		Version *string `json:"version,omitempty"`
-	} `json:"serverInfo,omitempty"`
+type InitializeResultServerInfo struct {
+	// The name of the server as defined by the server.
+	Name string `json:"name,required"`
+
+	// The server's version as defined by the server.
+	Version string `json:"version,omitempty"`
 }
 
 // If the protocol version provided by the client can't be handled by the

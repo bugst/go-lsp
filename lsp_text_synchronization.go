@@ -64,7 +64,7 @@ func (v VersionedTextDocumentIdentifier) String() string {
 // omitted the new text is considered to be the full content of the document.
 type TextDocumentContentChangeEvent struct {
 	// The range of the document that changed.
-	Range Range `json:"range,omitempty"`
+	Range *Range `json:"range,omitempty"`
 
 	// The optional length of the range that got replaced.
 	//
@@ -76,6 +76,10 @@ type TextDocumentContentChangeEvent struct {
 }
 
 func (change TextDocumentContentChangeEvent) String() string {
+	if change.Range == nil {
+		return fmt.Sprintf("FULLTEXT -> %s", strconv.Quote(change.Text))
+	}
+
 	l := ""
 	if change.RangeLength != nil {
 		l = fmt.Sprintf(" (len=%d)", *change.RangeLength)

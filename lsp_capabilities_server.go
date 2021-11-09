@@ -803,14 +803,16 @@ type SemanticTokensOptions struct {
 	// Server supports providing semantic tokens for a specific range
 	// of a document.
 	// type: boolean | { }
-	Range *BooleanOrEmptyStruct `json:"range,omitempty"`
+	Range BooleanOrEmptyStruct `json:"range,required"`
 
 	// Server supports providing semantic tokens for a full document.
 	// type: boolean | { delta?: boolean }
-	Full *struct {
-		// The server supports deltas for full documents.
-		Delta bool `json:"delta,omitempty"`
-	} `json:"full,omitempty"`
+	Full *SemantiTokenFullOptions `json:"full,omitempty"`
+}
+
+type SemantiTokenFullOptions struct {
+	// The server supports deltas for full documents.
+	Delta bool `json:"delta,omitempty"`
 }
 
 type BooleanOrEmptyStruct bool
