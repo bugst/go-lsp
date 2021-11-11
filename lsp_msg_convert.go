@@ -627,7 +627,7 @@ func DecodeServerNotificationParams(method string, req json.RawMessage) (interfa
 		var res PublishDiagnosticsParams
 		return &res, json.Unmarshal(req, &res)
 	default:
-		panic("unimplemented message")
+		panic("unimplemented message: " + method)
 	}
 }
 

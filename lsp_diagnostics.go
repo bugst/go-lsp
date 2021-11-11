@@ -6,7 +6,11 @@
 
 package lsp
 
-import "go.bug.st/json"
+import (
+	"fmt"
+
+	"go.bug.st/json"
+)
 
 type PublishDiagnosticsParams struct {
 	// The URI for which diagnostic information is reported.
@@ -65,30 +69,45 @@ type Diagnostic struct {
 
 type DiagnosticSeverity int
 
-// Reports an error.
+// DiagnosticSeverityError Reports an error.
 const DiagnosticSeverityError DiagnosticSeverity = 1
 
-// Reports a warning.
+// DiagnosticSeverityWarning Reports a warning.
 const DiagnosticSeverityWarning DiagnosticSeverity = 2
 
-// Reports an information.
+// DiagnosticSeverityInformation Reports an information.
 const DiagnosticSeverityInformation DiagnosticSeverity = 3
 
-// Reports a hint.
+// DiagnosticSeverityHint Reports a hint.
 const DiagnosticSeverityHint DiagnosticSeverity = 4
+
+func (ds DiagnosticSeverity) String() string {
+	switch ds {
+	case DiagnosticSeverityError:
+		return "Error"
+	case DiagnosticSeverityWarning:
+		return "Warning"
+	case DiagnosticSeverityInformation:
+		return "Information"
+	case DiagnosticSeverityHint:
+		return "Hint"
+	default:
+		return fmt.Sprintf("Unknown (%d)", int(ds))
+	}
+}
 
 // The diagnostic tags.
 //
 // @since 3.15.0
 type DiagnosticTag int
 
-// Unused or unnecessary code.
+// DiagnosticTagUnnecessary Unused or unnecessary code.
 //
 // Clients are allowed to render diagnostics with this tag faded out
 // instead of having an error squiggle.
 const DiagnosticTagUnnecessary DiagnosticTag = 1
 
-// Deprecated or obsolete code.
+// DiagnosticTagDeprecated Deprecated or obsolete code.
 //
 // Clients are allowed to rendered diagnostics with this tag strike through.
 const DiagnosticTagDeprecated DiagnosticTag = 2
@@ -102,4 +121,15 @@ type DiagnosticRelatedInformation struct {
 
 	// The message of this related diagnostic information.
 	Message string `json:"message,required"`
+}
+
+func (dt DiagnosticTag) String() string {
+	switch dt {
+	case DiagnosticTagUnnecessary:
+		return "Unnecessary"
+	case DiagnosticTagDeprecated:
+		return "Deprecated"
+	default:
+		return fmt.Sprintf("Unknown (%d)", int(dt))
+	}
 }
