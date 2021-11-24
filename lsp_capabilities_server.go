@@ -31,7 +31,7 @@ type ServerCapabilities struct {
 	// The server provides go to declaration support.
 	//
 	// @since 3.14.0
-	DeclarationProvider *DeclarationRegistrationOptions `json:"declarationProvider,omitempty"`
+	DeclarationProvider *DeclarationOptions `json:"declarationProvider,omitempty"`
 
 	// The server provides goto definition support.
 	DefinitionProvider *DefinitionOptions `json:"definitionProvider,omitempty"`
@@ -39,12 +39,12 @@ type ServerCapabilities struct {
 	// The server provides goto type definition support.
 	//
 	// @since 3.6.0
-	TypeDefinitionProvider *TypeDefinitionRegistrationOptions `json:"typeDefinitionProvider,omitempty"`
+	TypeDefinitionProvider *TypeDefinitionOptions `json:"typeDefinitionProvider,omitempty"`
 
 	// The server provides goto implementation support.
 	//
 	// @since 3.6.0
-	ImplementationProvider *ImplementationRegistrationOptions `json:"implementationProvider,omitempty"`
+	ImplementationProvider *ImplementationOptions `json:"implementationProvider,omitempty"`
 
 	// The server provides find references support.
 	ReferencesProvider *ReferenceOptions `json:"referencesProvider,omitempty"`
@@ -69,7 +69,7 @@ type ServerCapabilities struct {
 	// The server provides color provider support.
 	//
 	// @since 3.6.0
-	ColorProvider *DocumentColorRegistrationOptions `json:"colorProvider,omitempty"`
+	ColorProvider *DocumentColorOptions `json:"colorProvider,omitempty"`
 
 	// The server provides document formatting.
 	DocumentFormattingProvider *DocumentFormattingOptions `json:"documentFormattingProvider,omitempty"`
@@ -88,7 +88,7 @@ type ServerCapabilities struct {
 	// The server provides folding provider support.
 	//
 	// @since 3.10.0
-	FoldingRangeProvider *FoldingRangeRegistrationOptions `json:"foldingRangeProvider,omitempty"`
+	FoldingRangeProvider *FoldingRangeOptions `json:"foldingRangeProvider,omitempty"`
 
 	// The server provides execute command support.
 	ExecuteCommandProvider *ExecuteCommandOptions `json:"executeCommandProvider,omitempty"`
@@ -96,17 +96,17 @@ type ServerCapabilities struct {
 	// The server provides selection range support.
 	//
 	// @since 3.15.0
-	SelectionRangeProvider *SelectionRangeRegistrationOptions `json:"selectionRangeProvider,omitempty"`
+	SelectionRangeProvider *SelectionRangeOptions `json:"selectionRangeProvider,omitempty"`
 
 	// The server provides linked editing range support.
 	//
 	// @since 3.16.0
-	LinkedEditingRangeProvider *LinkedEditingRangeRegistrationOptions `json:"linkedEditingRangeProvider,omitempty"`
+	LinkedEditingRangeProvider *LinkedEditingRangeOptions `json:"linkedEditingRangeProvider,omitempty"`
 
 	// The server provides call hierarchy support.
 	//
 	// @since 3.16.0
-	CallHierarchyProvider *CallHierarchyRegistrationOptions `json:"callHierarchyProvider,omitempty"`
+	CallHierarchyProvider *CallHierarchyOptions `json:"callHierarchyProvider,omitempty"`
 
 	// The server provides semantic tokens support.
 	//
@@ -116,7 +116,7 @@ type ServerCapabilities struct {
 	// Whether server provides moniker support.
 	//
 	// @since 3.16.0
-	MonikerProvider *MonikerRegistrationOptions `json:"monikerProvider,omitempty"`
+	MonikerProvider *MonikerOptions `json:"monikerProvider,omitempty"`
 
 	// The server provides workspace symbol support.
 	WorkspaceSymbolProvider *WorkspaceSymbolOptions `json:"workspaceSymbolProvider,omitempty"`
@@ -296,33 +296,29 @@ type SignatureHelpOptions struct {
 	RetriggerCharacters []string `json:"retriggerCharacters,omitempty"`
 }
 
+// boolean|DeclarationOptions|DeclarationRegistrationOptions
 type DeclarationOptions struct {
 	*WorkDoneProgressOptions
-}
-
-// boolean|DeclarationOptions|DeclarationRegistrationOptions
-type DeclarationRegistrationOptions struct {
-	*DeclarationOptions
 	*StaticRegistrationOptions
 	*TextDocumentRegistrationOptions
 }
 
-func (s *DeclarationRegistrationOptions) UnmarshalJSON(data []byte) error {
+func (s *DeclarationOptions) UnmarshalJSON(data []byte) error {
 	save := false
 	if err := json.Unmarshal(data, &save); err == nil {
 		if save {
-			*s = DeclarationRegistrationOptions{}
+			*s = DeclarationOptions{}
 		}
 		return nil
 	}
 
-	type __ DeclarationRegistrationOptions // avoid loops
+	type __ DeclarationOptions // avoid loops
 	var res __
 	if err := json.Unmarshal(data, &res); err == nil {
-		*s = DeclarationRegistrationOptions(res)
+		*s = DeclarationOptions(res)
 		return nil
 	}
-	return fmt.Errorf("expected boolean or DeclarationRegistrationOptions")
+	return fmt.Errorf("expected boolean or DeclarationOptions")
 }
 
 // General text document registration options.
@@ -387,62 +383,54 @@ func (s *DefinitionOptions) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("expected boolean or DefinitionOptions")
 }
 
+// boolean | TypeDefinitionOptions | TypeDefinitionRegistrationOptions
 type TypeDefinitionOptions struct {
 	*WorkDoneProgressOptions
-}
-
-// boolean | TypeDefinitionOptions | TypeDefinitionRegistrationOptions
-type TypeDefinitionRegistrationOptions struct {
 	*TextDocumentRegistrationOptions
-	*TypeDefinitionOptions
 	*StaticRegistrationOptions
 }
 
-func (s *TypeDefinitionRegistrationOptions) UnmarshalJSON(data []byte) error {
+func (s *TypeDefinitionOptions) UnmarshalJSON(data []byte) error {
 	save := false
 	if err := json.Unmarshal(data, &save); err == nil {
 		if save {
-			*s = TypeDefinitionRegistrationOptions{}
+			*s = TypeDefinitionOptions{}
 		}
 		return nil
 	}
 
-	type __ TypeDefinitionRegistrationOptions // avoid loops
+	type __ TypeDefinitionOptions // avoid loops
 	var res __
 	if err := json.Unmarshal(data, &res); err == nil {
-		*s = TypeDefinitionRegistrationOptions(res)
+		*s = TypeDefinitionOptions(res)
 		return nil
 	}
-	return fmt.Errorf("expected boolean or TypeDefinitionRegistrationOptions")
-}
-
-type ImplementationOptions struct {
-	*WorkDoneProgressOptions
+	return fmt.Errorf("expected boolean or TypeDefinitionOptions")
 }
 
 // boolean | ImplementationOptions | ImplementationRegistrationOptions
-type ImplementationRegistrationOptions struct {
+type ImplementationOptions struct {
+	*WorkDoneProgressOptions
 	*TextDocumentRegistrationOptions
-	*ImplementationOptions
 	*StaticRegistrationOptions
 }
 
-func (s *ImplementationRegistrationOptions) UnmarshalJSON(data []byte) error {
+func (s *ImplementationOptions) UnmarshalJSON(data []byte) error {
 	save := false
 	if err := json.Unmarshal(data, &save); err == nil {
 		if save {
-			*s = ImplementationRegistrationOptions{}
+			*s = ImplementationOptions{}
 		}
 		return nil
 	}
 
-	type __ ImplementationRegistrationOptions // avoid loops
+	type __ ImplementationOptions // avoid loops
 	var res __
 	if err := json.Unmarshal(data, &res); err == nil {
-		*s = ImplementationRegistrationOptions(res)
+		*s = ImplementationOptions(res)
 		return nil
 	}
-	return fmt.Errorf("expected boolean or ImplementationRegistrationOptions")
+	return fmt.Errorf("expected boolean or ImplementationOptions")
 }
 
 // boolean | ReferenceOptions
@@ -569,33 +557,29 @@ type DocumentLinkOptions struct {
 	ResolveProvider bool `json:"resolveProvider,omitempty"`
 }
 
+// boolean | DocumentColorOptions | DocumentColorRegistrationOptions
 type DocumentColorOptions struct {
 	*WorkDoneProgressOptions
-}
-
-// boolean | DocumentColorOptions | DocumentColorRegistrationOptions
-type DocumentColorRegistrationOptions struct {
 	*TextDocumentRegistrationOptions
 	*StaticRegistrationOptions
-	*DocumentColorOptions
 }
 
-func (s *DocumentColorRegistrationOptions) UnmarshalJSON(data []byte) error {
+func (s *DocumentColorOptions) UnmarshalJSON(data []byte) error {
 	save := false
 	if err := json.Unmarshal(data, &save); err == nil {
 		if save {
-			*s = DocumentColorRegistrationOptions{}
+			*s = DocumentColorOptions{}
 		}
 		return nil
 	}
 
-	type __ DocumentColorRegistrationOptions // avoid loops
+	type __ DocumentColorOptions // avoid loops
 	var res __
 	if err := json.Unmarshal(data, &res); err == nil {
-		*s = DocumentColorRegistrationOptions(res)
+		*s = DocumentColorOptions(res)
 		return nil
 	}
-	return fmt.Errorf("expected boolean or DocumentColorRegistrationOptions")
+	return fmt.Errorf("expected boolean or DocumentColorOptions")
 }
 
 // boolean | DocumentFormattingOptions
@@ -678,33 +662,29 @@ func (s *RenameOptions) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("expected boolean or RenameOptions")
 }
 
+// boolean | FoldingRangeOptions | FoldingRangeRegistrationOptions
 type FoldingRangeOptions struct {
 	*WorkDoneProgressOptions
-}
-
-// boolean | FoldingRangeOptions | FoldingRangeRegistrationOptions
-type FoldingRangeRegistrationOptions struct {
 	*TextDocumentRegistrationOptions
-	*FoldingRangeOptions
 	*StaticRegistrationOptions
 }
 
-func (s *FoldingRangeRegistrationOptions) UnmarshalJSON(data []byte) error {
+func (s *FoldingRangeOptions) UnmarshalJSON(data []byte) error {
 	save := false
 	if err := json.Unmarshal(data, &save); err == nil {
 		if save {
-			*s = FoldingRangeRegistrationOptions{}
+			*s = FoldingRangeOptions{}
 		}
 		return nil
 	}
 
-	type __ FoldingRangeRegistrationOptions // avoid loops
+	type __ FoldingRangeOptions // avoid loops
 	var res __
 	if err := json.Unmarshal(data, &res); err == nil {
-		*s = FoldingRangeRegistrationOptions(res)
+		*s = FoldingRangeOptions(res)
 		return nil
 	}
-	return fmt.Errorf("expected boolean or FoldingRangeRegistrationOptions")
+	return fmt.Errorf("expected boolean or FoldingRangeOptions")
 }
 
 type ExecuteCommandOptions struct {
@@ -714,91 +694,79 @@ type ExecuteCommandOptions struct {
 	Commands []string `json:"commands"`
 }
 
+// boolean | SelectionRangeOptions | SelectionRangeRegistrationOptions
 type SelectionRangeOptions struct {
 	*WorkDoneProgressOptions
-}
-
-// boolean | SelectionRangeOptions | SelectionRangeRegistrationOptions
-type SelectionRangeRegistrationOptions struct {
-	*SelectionRangeOptions
 	*TextDocumentRegistrationOptions
 	*StaticRegistrationOptions
 }
 
-func (s *SelectionRangeRegistrationOptions) UnmarshalJSON(data []byte) error {
+func (s *SelectionRangeOptions) UnmarshalJSON(data []byte) error {
 	save := false
 	if err := json.Unmarshal(data, &save); err == nil {
 		if save {
-			*s = SelectionRangeRegistrationOptions{}
+			*s = SelectionRangeOptions{}
 		}
 		return nil
 	}
 
-	type __ SelectionRangeRegistrationOptions // avoid loops
+	type __ SelectionRangeOptions // avoid loops
 	var res __
 	if err := json.Unmarshal(data, &res); err == nil {
-		*s = SelectionRangeRegistrationOptions(res)
+		*s = SelectionRangeOptions(res)
 		return nil
 	}
-	return fmt.Errorf("expected boolean or SelectionRangeRegistrationOptions")
-}
-
-type LinkedEditingRangeOptions struct {
-	*WorkDoneProgressOptions
+	return fmt.Errorf("expected boolean or SelectionRangeOptions")
 }
 
 // boolean | LinkedEditingRangeOptions | LinkedEditingRangeRegistrationOptions
-type LinkedEditingRangeRegistrationOptions struct {
+type LinkedEditingRangeOptions struct {
+	*WorkDoneProgressOptions
 	*TextDocumentRegistrationOptions
-	*LinkedEditingRangeOptions
 	*StaticRegistrationOptions
 }
 
-func (s *LinkedEditingRangeRegistrationOptions) UnmarshalJSON(data []byte) error {
+func (s *LinkedEditingRangeOptions) UnmarshalJSON(data []byte) error {
 	save := false
 	if err := json.Unmarshal(data, &save); err == nil {
 		if save {
-			*s = LinkedEditingRangeRegistrationOptions{}
+			*s = LinkedEditingRangeOptions{}
 		}
 		return nil
 	}
 
-	type __ LinkedEditingRangeRegistrationOptions // avoid loops
+	type __ LinkedEditingRangeOptions // avoid loops
 	var res __
 	if err := json.Unmarshal(data, &res); err == nil {
-		*s = LinkedEditingRangeRegistrationOptions(res)
+		*s = LinkedEditingRangeOptions(res)
 		return nil
 	}
-	return fmt.Errorf("expected boolean or LinkedEditingRangeRegistrationOptions")
-}
-
-type CallHierarchyOptions struct {
-	*WorkDoneProgressOptions
+	return fmt.Errorf("expected boolean or LinkedEditingRangeOptions")
 }
 
 // boolean | CallHierarchyOptions | CallHierarchyRegistrationOptions
-type CallHierarchyRegistrationOptions struct {
+type CallHierarchyOptions struct {
+	*WorkDoneProgressOptions
 	*TextDocumentRegistrationOptions
-	*CallHierarchyOptions
 	*StaticRegistrationOptions
 }
 
-func (s *CallHierarchyRegistrationOptions) UnmarshalJSON(data []byte) error {
+func (s *CallHierarchyOptions) UnmarshalJSON(data []byte) error {
 	save := false
 	if err := json.Unmarshal(data, &save); err == nil {
 		if save {
-			*s = CallHierarchyRegistrationOptions{}
+			*s = CallHierarchyOptions{}
 		}
 		return nil
 	}
 
-	type __ CallHierarchyRegistrationOptions // avoid loops
+	type __ CallHierarchyOptions // avoid loops
 	var res __
 	if err := json.Unmarshal(data, &res); err == nil {
-		*s = CallHierarchyRegistrationOptions(res)
+		*s = CallHierarchyOptions(res)
 		return nil
 	}
-	return fmt.Errorf("expected boolean or CallHierarchyRegistrationOptions")
+	return fmt.Errorf("expected boolean or CallHierarchyOptions")
 }
 
 type SemanticTokensOptions struct {
@@ -850,32 +818,28 @@ type SemanticTokensLegend struct {
 	TokenModifiers []string `json:"tokenModifiers"`
 }
 
+// boolean | MonikerOptions | MonikerRegistrationOptions is defined as follows:
 type MonikerOptions struct {
 	*WorkDoneProgressOptions
-}
-
-// boolean | MonikerOptions | MonikerRegistrationOptions is defined as follows:
-type MonikerRegistrationOptions struct {
 	*TextDocumentRegistrationOptions
-	*MonikerOptions
 }
 
-func (s *MonikerRegistrationOptions) UnmarshalJSON(data []byte) error {
+func (s *MonikerOptions) UnmarshalJSON(data []byte) error {
 	save := false
 	if err := json.Unmarshal(data, &save); err == nil {
 		if save {
-			*s = MonikerRegistrationOptions{}
+			*s = MonikerOptions{}
 		}
 		return nil
 	}
 
-	type __ MonikerRegistrationOptions // avoid loops
+	type __ MonikerOptions // avoid loops
 	var res __
 	if err := json.Unmarshal(data, &res); err == nil {
-		*s = MonikerRegistrationOptions(res)
+		*s = MonikerOptions(res)
 		return nil
 	}
-	return fmt.Errorf("expected boolean or MonikerRegistrationOptions")
+	return fmt.Errorf("expected boolean or MonikerOptions")
 }
 
 type WorkspaceSymbolOptions struct {
