@@ -111,7 +111,7 @@ type ServerCapabilities struct {
 	// The server provides semantic tokens support.
 	//
 	// @since 3.16.0
-	SemanticTokensProvider *SemanticTokensRegistrationOptions `json:"semanticTokensProvider,omitempty"`
+	SemanticTokensProvider *SemanticTokensOptions `json:"semanticTokensProvider,omitempty"`
 
 	// Whether server provides moniker support.
 	//
@@ -772,6 +772,9 @@ func (s *CallHierarchyOptions) UnmarshalJSON(data []byte) error {
 }
 
 type SemanticTokensOptions struct {
+	*TextDocumentRegistrationOptions
+	*StaticRegistrationOptions
+
 	// WorkDoneProgressOptions
 	// The legend used by the server
 	Legend SemanticTokensLegend `json:"legend,required"`
@@ -804,12 +807,6 @@ func (x *BooleanOrEmptyStruct) UnmarshalJSON(data []byte) error {
 	*x = BooleanOrEmptyStruct(b)
 	return err
 
-}
-
-type SemanticTokensRegistrationOptions struct {
-	*TextDocumentRegistrationOptions
-	*SemanticTokensOptions
-	*StaticRegistrationOptions
 }
 
 type SemanticTokensLegend struct {
