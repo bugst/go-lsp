@@ -247,14 +247,16 @@ type CompletionOptions struct {
 	// capabilities.
 	//
 	// @since 3.17.0 - proposed state
-	CompletionItem struct {
-		// The server has support for completion item label
-		// details (see also `CompletionItemLabelDetails`) when receiving
-		// a completion item in a resolve call.
-		//
-		// @since 3.17.0 - proposed state
-		LabelDetailsSupport bool `json:"labelDetailsSupport,omitempty"`
-	} `json:"completionItem,omitempty"`
+	CompletionItem *CompletionItemOptions `json:"completionItem,omitempty"`
+}
+
+type CompletionItemOptions struct {
+	// The server has support for completion item label
+	// details (see also `CompletionItemLabelDetails`) when receiving
+	// a completion item in a resolve call.
+	//
+	// @since 3.17.0 - proposed state
+	LabelDetailsSupport bool `json:"labelDetailsSupport,omitempty"`
 }
 
 type HoverOptions struct {
