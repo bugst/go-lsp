@@ -558,7 +558,7 @@ func DecodeClientNotificationParams(method string, req json.RawMessage) (interfa
 		return &res, json.Unmarshal(req, &res)
 	case "exit":
 		return nil, nil
-	case "$/setTrace":
+	case "$/setTrace", "$/setTraceNotification":
 		var res SetTraceParams
 		return &res, json.Unmarshal(req, &res)
 	case "window/workDoneProgress/cancel":

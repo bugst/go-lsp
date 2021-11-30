@@ -136,7 +136,7 @@ func (serv *Server) notificationDispatcher(logger jsonrpc.FunctionLogger, method
 		serv.handler.Initialized(logger, &param)
 	case "exit":
 		serv.handler.Exit(logger)
-	case "$/setTrace":
+	case "$/setTrace", "$/setTraceNotification":
 		var param SetTraceParams
 		if err := json.Unmarshal(req, &param); err != nil {
 			serv.errorHandler(err)
