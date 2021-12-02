@@ -122,7 +122,7 @@ type DidSaveTextDocumentParams struct {
 }
 
 type RenameParams struct {
-	*TextDocumentPositionParams
+	TextDocumentPositionParams
 	*WorkDoneProgressParams
 
 	// The new name of the symbol. If the given name is not valid the

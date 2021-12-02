@@ -321,7 +321,7 @@ type DocumentHighlightParams struct {
 }
 
 type DeclarationParams struct {
-	*TextDocumentPositionParams
+	TextDocumentPositionParams
 	*WorkDoneProgressParams
 	*PartialResultParams
 }
@@ -1141,7 +1141,7 @@ type SemanticTokensRangeParams struct {
 }
 
 type LinkedEditingRangeParams struct {
-	*TextDocumentPositionParams
+	TextDocumentPositionParams
 	*WorkDoneProgressParams
 }
 
@@ -1157,7 +1157,7 @@ type LinkedEditingRanges struct {
 }
 
 type MonikerParams struct {
-	*TextDocumentPositionParams
+	TextDocumentPositionParams
 	*WorkDoneProgressParams
 	*PartialResultParams
 }
