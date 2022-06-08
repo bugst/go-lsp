@@ -6,7 +6,11 @@
 
 package jsonrpc
 
-import "go.bug.st/json"
+import (
+	"time"
+
+	"go.bug.st/json"
+)
 
 type Logger interface {
 	LogOutgoingRequest(id string, method string, params json.RawMessage)
@@ -17,6 +21,8 @@ type Logger interface {
 	LogIncomingNotification(method string, params json.RawMessage) FunctionLogger
 	LogIncomingCancelRequest(id string)
 	LogOutgoingCancelRequest(id string)
+	LogIncomingDataDelay(time.Duration)
+	LogOutgoingDataDelay(time.Duration)
 }
 
 type FunctionLogger interface {
@@ -52,3 +58,7 @@ func (NullLogger) LogOutgoingCancelRequest(id string) {}
 type NullFunctionLogger struct{}
 
 func (NullFunctionLogger) Logf(format string, a ...interface{}) {}
+
+func (NullLogger) LogIncomingDataDelay(time.Duration) {}
+
+func (NullLogger) LogOutgoingDataDelay(time.Duration) {}

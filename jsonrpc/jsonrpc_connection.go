@@ -16,6 +16,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"go.bug.st/json"
 )
@@ -83,6 +84,8 @@ func (c *Connection) SetLogger(l Logger) {
 func (c *Connection) Run() {
 	in := textproto.NewReader(c.in)
 	for {
+		start := time.Now()
+
 		head, err := in.ReadMIMEHeader()
 		if err != nil {
 			c.errorHandler(err)
@@ -107,6 +110,12 @@ func (c *Connection) Run() {
 		} else if n != dataLen {
 			c.errorHandler(fmt.Errorf("expected %d bytes but %d have been read", dataLen, n))
 		}
+
+		elapsed := time.Since(start)
+		c.loggerMutex.Lock()
+		c.logger.LogIncomingDataDelay(elapsed)
+		c.loggerMutex.Unlock()
+
 		c.handleIncomingData(jsonData)
 	}
 }
@@ -313,6 +322,7 @@ func (c *Connection) send(data interface{}) error {
 		return err
 	}
 
+	start := time.Now()
 	c.outMutex.Lock()
 	defer c.outMutex.Unlock()
 	if _, err := fmt.Fprintf(c.out, "Content-Length: %d\r\n\r\n", len(buff)); err != nil {
@@ -325,5 +335,9 @@ func (c *Connection) send(data interface{}) error {
 		}
 		buff = buff[n:]
 	}
+	elapsed := time.Since(start)
+	c.loggerMutex.Lock()
+	c.logger.LogOutgoingDataDelay(elapsed)
+	c.loggerMutex.Unlock()
 	return nil
 }
