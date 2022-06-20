@@ -41,14 +41,18 @@ type ServerMessagesHandler interface {
 
 // Client is an LSP Client
 type Client struct {
-	conn         *jsonrpc.Connection
-	handler      ServerMessagesHandler
-	errorHandler func(e error)
+	conn               *jsonrpc.Connection
+	handler            ServerMessagesHandler
+	customNotification map[string]CustomNotification
+	customRequest      map[string]CustomRequest
+	errorHandler       func(e error)
 }
 
 func NewClient(in io.Reader, out io.Writer, handler ServerMessagesHandler) *Client {
 	client := &Client{
-		errorHandler: func(e error) {},
+		errorHandler:       func(e error) {},
+		customNotification: map[string]CustomNotification{},
+		customRequest:      map[string]CustomRequest{},
 	}
 	client.handler = handler
 	client.conn = jsonrpc.NewConnection(
@@ -65,6 +69,14 @@ func (client *Client) SetLogger(l jsonrpc.Logger) {
 
 func (client *Client) SetErrorHandler(handler func(e error)) {
 	client.errorHandler = handler
+}
+
+func (client *Client) RegisterCustomNotification(method string, callback CustomNotification) {
+	client.customNotification[method] = callback
+}
+
+func (client *Client) RegisterCustomRequest(method string, callback CustomRequest) {
+	client.customRequest[method] = callback
 }
 
 func (client *Client) Run() {
@@ -114,7 +126,11 @@ func (client *Client) notificationDispatcher(logger jsonrpc.FunctionLogger, meth
 		}
 		client.handler.TextDocumentPublishDiagnostics(logger, &param)
 	default:
-		panic("unimplemented message")
+		if handler, ok := client.customNotification[method]; ok {
+			handler(logger, req)
+		} else {
+			panic("unimplemented notification: " + method)
+		}
 	}
 }
 
@@ -177,7 +193,11 @@ func (client *Client) requestDispatcher(ctx context.Context, logger jsonrpc.Func
 	case "workspace/codeLens/refresh":
 		resp(nil, client.handler.WorkspaceCodeLensRefresh(ctx, logger))
 	default:
-		panic("unimplemented message")
+		if handler, ok := client.customRequest[method]; ok {
+			resp(handler(ctx, logger, req))
+		} else {
+			panic("unimplemented request: " + method)
+		}
 	}
 }
 

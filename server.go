@@ -86,14 +86,24 @@ type ClientMessagesHandler interface {
 
 // Server is an LSP Server
 type Server struct {
-	conn         *jsonrpc.Connection
-	handler      ClientMessagesHandler
-	errorHandler func(e error)
+	conn               *jsonrpc.Connection
+	handler            ClientMessagesHandler
+	customNotification map[string]CustomNotification
+	customRequest      map[string]CustomRequest
+	errorHandler       func(e error)
 }
+
+// CustomNotification is a function type for incoming custom notifications callbacks
+type CustomNotification func(logger jsonrpc.FunctionLogger, req json.RawMessage)
+
+// CustomNotification is a function type for incoming custom requests callbacks
+type CustomRequest func(ctx context.Context, logger jsonrpc.FunctionLogger, req json.RawMessage) (res interface{}, err *jsonrpc.ResponseError)
 
 func NewServer(in io.Reader, out io.Writer, handler ClientMessagesHandler) *Server {
 	serv := &Server{
-		errorHandler: func(e error) {},
+		errorHandler:       func(e error) {},
+		customNotification: map[string]CustomNotification{},
+		customRequest:      map[string]CustomRequest{},
 	}
 	serv.handler = handler
 	serv.conn = jsonrpc.NewConnection(
@@ -110,6 +120,14 @@ func (serv *Server) SetLogger(l jsonrpc.Logger) {
 
 func (serv *Server) SetErrorHandler(handler func(e error)) {
 	serv.errorHandler = handler
+}
+
+func (serv *Server) RegisterCustomNotification(method string, callback CustomNotification) {
+	serv.customNotification[method] = callback
+}
+
+func (serv *Server) RegisterCustomRequest(method string, callback CustomRequest) {
+	serv.customRequest[method] = callback
 }
 
 func (serv *Server) Run() {
@@ -228,7 +246,11 @@ func (serv *Server) notificationDispatcher(logger jsonrpc.FunctionLogger, method
 		}
 		serv.handler.TextDocumentDidClose(logger, &param)
 	default:
-		panic("unimplemented message")
+		if handler, ok := serv.customNotification[method]; ok {
+			handler(logger, req)
+		} else {
+			panic("unimplemented notification: " + method)
+		}
 	}
 }
 
@@ -537,7 +559,11 @@ func (serv *Server) requestDispatcher(ctx context.Context, logger jsonrpc.Functi
 		}
 		resp(serv.handler.TextDocumentMoniker(ctx, logger, &param))
 	default:
-		panic("unimplemented message")
+		if handler, ok := serv.customRequest[method]; ok {
+			resp(handler(ctx, logger, req))
+		} else {
+			panic("unimplemented request: " + method)
+		}
 	}
 }
 
