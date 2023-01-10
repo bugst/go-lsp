@@ -63,15 +63,16 @@ var toSlash = filepath.ToSlash
 
 // NewDocumentURI create a DocumentURI from the given string path
 func NewDocumentURI(path string) DocumentURI {
-	// tranform path into URI
+	// transform path into URI
 	path = toSlash(path)
 	if len(path) == 0 || path[0] != '/' {
 		path = "/" + path
 	}
-	uri, err := NewDocumentURIFromURL("file://" + path)
+	uri, err := NewDocumentURIFromURL("file://")
 	if err != nil {
 		panic(err)
 	}
+	uri.url.Path = path
 	return uri
 }
 
