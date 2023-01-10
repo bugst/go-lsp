@@ -20,6 +20,10 @@ func TestUriToPath(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "C:/Users/test/Sketch.ino", d.unbox())
 
+	d, err = NewDocumentURIFromURL("file:///C:/Users/test/Sketch%23suffix.ino")
+	require.NoError(t, err)
+	require.Equal(t, "C:/Users/test/Sketch#suffix.ino", d.unbox())
+
 	d, err = NewDocumentURIFromURL("file:///c%3A/Users/test/Sketch.ino")
 	require.NoError(t, err)
 	require.Equal(t, "c:/Users/test/Sketch.ino", d.unbox())
@@ -38,9 +42,12 @@ func TestUriToPath(t *testing.T) {
 }
 
 func TestPathToUri(t *testing.T) {
+	d := NewDocumentURI("/Users/test/Sketch#suffix.ino")
+	require.Equal(t, "file:///Users/test/Sketch%23suffix.ino", d.String())
+
 	toSlash = windowsToSlash // Emulate windows cases
 
-	d := NewDocumentURI("C:\\Users\\test\\Sketch.ino")
+	d = NewDocumentURI("C:\\Users\\test\\Sketch.ino")
 	require.Equal(t, "file:///C:/Users/test/Sketch.ino", d.String())
 	d = NewDocumentURI("/Users/test/Sketch.ino")
 	require.Equal(t, "file:///Users/test/Sketch.ino", d.String())
