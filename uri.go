@@ -54,9 +54,6 @@ func (uri DocumentURI) unbox() string {
 // Converts `"C:"` to `"c:"` to be compatible with VS Code URI's drive letter casing
 // https://github.com/Microsoft/vscode/issues/68325#issuecomment-462239992
 func lowercaseDriveSegment(pathSegment string) string {
-	if len(pathSegment) == 0 {
-		return pathSegment
-	}
 	if expUppercaseDriveID.MatchString(pathSegment) {
 		chars := []rune(pathSegment)
 		chars[0] = unicode.ToLower(chars[0])
