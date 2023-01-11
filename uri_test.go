@@ -48,7 +48,9 @@ func TestPathToUri(t *testing.T) {
 	toSlash = windowsToSlash // Emulate windows cases
 
 	d = NewDocumentURI("C:\\Users\\test\\Sketch.ino")
-	require.Equal(t, "file:///C:/Users/test/Sketch.ino", d.String())
+	require.Equal(t, "file:///c%3A/Users/test/Sketch.ino", d.String()) // driver letter is converted to lower case https://github.com/Microsoft/vscode/issues/68325#issuecomment-462239992
+	d = NewDocumentURI("c:\\Users\\test\\Sketch.ino")
+	require.Equal(t, "file:///c%3A/Users/test/Sketch.ino", d.String())
 	d = NewDocumentURI("/Users/test/Sketch.ino")
 	require.Equal(t, "file:///Users/test/Sketch.ino", d.String())
 	d = NewDocumentURI("\U0001F61B")
@@ -70,7 +72,7 @@ func TestJSONMarshalUnmarshal(t *testing.T) {
 	d = NewDocumentURI("C:\\Users\\test\\Sketch.ino")
 	data, err := json.Marshal(d)
 	require.NoError(t, err)
-	require.Equal(t, `"file:///C:/Users/test/Sketch.ino"`, string(data))
+	require.Equal(t, `"file:///c%3A/Users/test/Sketch.ino"`, string(data))
 
 	d = NewDocumentURI("/Users/test/Sketch.ino")
 	data, err = json.Marshal(d)
