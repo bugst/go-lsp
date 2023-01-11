@@ -92,16 +92,9 @@ func NewDocumentURI(path string) DocumentURI {
 			encodedSegments[i] = segment
 		} else {
 			segment = lowercaseDriveSegment(segment)
-			chars := strings.SplitAfter(segment, "")
-			for i, c := range chars {
-				// Spaces must be turned into `%20`. Otherwise, `url.QueryEscape`` encodes them to `+`.
-				if c == " " {
-					chars[i] = "%20"
-				} else {
-					chars[i] = url.QueryEscape(c)
-				}
-			}
-			encodedSegments[i] = strings.Join(chars, "")
+			segment = url.QueryEscape(segment)
+			// Spaces must be turned into `%20`. Otherwise, `url.QueryEscape`` encodes them to `+`.
+			encodedSegments[i] = strings.ReplaceAll(segment, "+", "%20")
 		}
 	}
 	urlPath := strings.Join(encodedSegments, "/")
