@@ -69,7 +69,7 @@ type LocationLink struct {
 	OriginSelectionRange *Range `json:"originSelectionRange,omitempty"`
 
 	// The target resource identifier of this link.
-	TargetUri DocumentURI `json:"targetUri,required"`
+	TargetURI DocumentURI `json:"targetUri,required"`
 
 	// The full target range of this link. If the target for example is a symbol
 	// then target range is the range enclosing this symbol not including

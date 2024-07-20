@@ -148,7 +148,7 @@ type ConfigurationParams struct {
 
 type ConfigurationItem struct {
 	// The scope to get the configuration section for.
-	ScopeUri DocumentURI `json:"scopeUri,omitempty"`
+	ScopeURI DocumentURI `json:"scopeUri,omitempty"`
 
 	// The configuration section asked for.
 	Section string `json:"section,omitempty"`

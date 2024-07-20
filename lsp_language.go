@@ -889,10 +889,10 @@ type RenameFilesParams struct {
 // @since 3.16.0
 type FileRename struct {
 	// A file:// URI for the original location of the file/folder being renamed.
-	OldUri string `json:"oldUri,required"`
+	OldURI string `json:"oldUri,required"`
 
 	// A file:// URI for the new location of the file/folder being renamed.
-	NewUri string `json:"newUri,required"`
+	NewURI string `json:"newUri,required"`
 }
 
 // The parameters sent in notifications/requests for user-initiated deletes
@@ -909,7 +909,7 @@ type DeleteFilesParams struct {
 // @since 3.16.0
 type FileDelete struct {
 	// A file:// URI for the location of the file/folder being deleted.
-	Uri string `json:"uri,required"`
+	URI string `json:"uri,required"`
 }
 
 type CodeLensParams struct {
