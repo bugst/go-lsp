@@ -107,7 +107,3 @@ func TestNotInoFromSourceMapper(t *testing.T) {
 func windowsToSlash(path string) string {
 	return strings.ReplaceAll(path, `\`, "/")
 }
-
-func windowsFromSlash(path string) string {
-	return strings.ReplaceAll(path, "/", `\`)
-}
