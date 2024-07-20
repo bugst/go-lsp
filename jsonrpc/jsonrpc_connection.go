@@ -236,14 +236,14 @@ func (c *Connection) Close() {
 
 func (c *Connection) SendRequest(ctx context.Context, method string, params json.RawMessage) (json.RawMessage, *ResponseError, error) {
 	id := fmt.Sprintf("%d", atomic.AddUint64(&c.lastOutRequestsIndex, 1))
-	encodedId, err := json.Marshal(id)
+	encodedID, err := json.Marshal(id)
 	if err != nil {
 		// should never happen...
 		panic("internal error creating RequestMessage")
 	}
 	req := RequestMessage{
 		JSONRPC: "2.0",
-		ID:      encodedId,
+		ID:      encodedID,
 		Method:  method,
 		Params:  params,
 	}
