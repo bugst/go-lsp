@@ -4,10 +4,5 @@
 // license that can be found in the LICENSE file.
 //
 
+// lsp is an implementation of a Language Server Protocol handler.
 package lsp
-
-type Unimplemented struct{}
-
-func (*Unimplemented) UnmarshalJSON([]byte) error {
-	panic("Unimplemented!")
-}
