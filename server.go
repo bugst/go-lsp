@@ -96,7 +96,7 @@ type Server struct {
 // CustomNotification is a function type for incoming custom notifications callbacks
 type CustomNotification func(logger jsonrpc.FunctionLogger, req json.RawMessage)
 
-// CustomNotification is a function type for incoming custom requests callbacks
+// CustomRequest is a function type for incoming custom requests callbacks
 type CustomRequest func(ctx context.Context, logger jsonrpc.FunctionLogger, req json.RawMessage) (res interface{}, err *jsonrpc.ResponseError)
 
 func NewServer(in io.Reader, out io.Writer, handler ClientMessagesHandler) *Server {

@@ -298,7 +298,7 @@ type SignatureHelpOptions struct {
 	RetriggerCharacters []string `json:"retriggerCharacters,omitempty"`
 }
 
-// boolean|DeclarationOptions|DeclarationRegistrationOptions
+// DeclarationOptions boolean|DeclarationOptions|DeclarationRegistrationOptions
 type DeclarationOptions struct {
 	*WorkDoneProgressOptions
 	*StaticRegistrationOptions
@@ -323,7 +323,7 @@ func (s *DeclarationOptions) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("expected boolean or DeclarationOptions")
 }
 
-// General text document registration options.
+// TextDocumentRegistrationOptions General text document registration options.
 type TextDocumentRegistrationOptions struct {
 	// A document selector to identify the scope of the registration. If set to
 	// null the document selector provided on the client side will be used.
@@ -355,14 +355,14 @@ type DocumentFilter struct {
 	Pattern string `json:"pattern,omitempty"`
 }
 
-// Static registration options to be returned in the initialize request.
+// StaticRegistrationOptions Static registration options to be returned in the initialize request.
 type StaticRegistrationOptions struct {
 	// The id used to register the request. The id can be used to deregister
 	// the request again. See also Registration#id.
 	ID string `json:"id,omitempty"`
 }
 
-//boolean|DefinitionOptions
+// DefinitionOptions boolean|DefinitionOptions
 type DefinitionOptions struct {
 	*WorkDoneProgressOptions
 }
@@ -385,7 +385,7 @@ func (s *DefinitionOptions) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("expected boolean or DefinitionOptions")
 }
 
-// boolean | TypeDefinitionOptions | TypeDefinitionRegistrationOptions
+// TypeDefinitionOptions boolean | TypeDefinitionOptions | TypeDefinitionRegistrationOptions
 type TypeDefinitionOptions struct {
 	*WorkDoneProgressOptions
 	*TextDocumentRegistrationOptions
@@ -410,7 +410,7 @@ func (s *TypeDefinitionOptions) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("expected boolean or TypeDefinitionOptions")
 }
 
-// boolean | ImplementationOptions | ImplementationRegistrationOptions
+// ImplementationOptions boolean | ImplementationOptions | ImplementationRegistrationOptions
 type ImplementationOptions struct {
 	*WorkDoneProgressOptions
 	*TextDocumentRegistrationOptions
@@ -435,7 +435,7 @@ func (s *ImplementationOptions) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("expected boolean or ImplementationOptions")
 }
 
-// boolean | ReferenceOptions
+// ReferenceOptions boolean | ReferenceOptions
 type ReferenceOptions struct {
 	*WorkDoneProgressOptions
 }
@@ -458,7 +458,7 @@ func (s *ReferenceOptions) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("expected boolean or ReferenceOptions")
 }
 
-// boolean | DocumentHighlightOptions
+// DocumentHighlightOptions boolean | DocumentHighlightOptions
 type DocumentHighlightOptions struct {
 	*WorkDoneProgressOptions
 }
@@ -481,7 +481,7 @@ func (s *DocumentHighlightOptions) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("expected boolean or DocumentHighlightOptions")
 }
 
-// boolean | DocumentSymbolOptions
+// DocumentSymbolOptions boolean | DocumentSymbolOptions
 type DocumentSymbolOptions struct {
 	*WorkDoneProgressOptions
 
@@ -510,7 +510,7 @@ func (s *DocumentSymbolOptions) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("expected boolean or DocumentSymbolOptions")
 }
 
-// boolean | CodeActionOptions
+// CodeActionOptions boolean | CodeActionOptions
 type CodeActionOptions struct {
 	*WorkDoneProgressOptions
 
@@ -559,7 +559,7 @@ type DocumentLinkOptions struct {
 	ResolveProvider bool `json:"resolveProvider,omitempty"`
 }
 
-// boolean | DocumentColorOptions | DocumentColorRegistrationOptions
+// DocumentColorOptions boolean | DocumentColorOptions | DocumentColorRegistrationOptions
 type DocumentColorOptions struct {
 	*WorkDoneProgressOptions
 	*TextDocumentRegistrationOptions
@@ -584,7 +584,7 @@ func (s *DocumentColorOptions) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("expected boolean or DocumentColorOptions")
 }
 
-// boolean | DocumentFormattingOptions
+// DocumentFormattingOptions boolean | DocumentFormattingOptions
 type DocumentFormattingOptions struct {
 	*WorkDoneProgressOptions
 }
@@ -607,7 +607,7 @@ func (s *DocumentFormattingOptions) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("expected boolean or DocumentFormattingOptions")
 }
 
-// boolean | DocumentFormattingOptions
+// DocumentRangeFormattingOptions boolean | DocumentFormattingOptions
 type DocumentRangeFormattingOptions struct {
 	*WorkDoneProgressOptions
 }
@@ -638,7 +638,7 @@ type DocumentOnTypeFormattingOptions struct {
 	MoreTriggerCharacter []string `json:"moreTriggerCharacter,omitempty"`
 }
 
-// boolean | RenameOptions
+// RenameOptions boolean | RenameOptions
 type RenameOptions struct {
 	*WorkDoneProgressOptions
 
@@ -664,7 +664,7 @@ func (s *RenameOptions) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("expected boolean or RenameOptions")
 }
 
-// boolean | FoldingRangeOptions | FoldingRangeRegistrationOptions
+// FoldingRangeOptions boolean | FoldingRangeOptions | FoldingRangeRegistrationOptions
 type FoldingRangeOptions struct {
 	*WorkDoneProgressOptions
 	*TextDocumentRegistrationOptions
@@ -696,7 +696,7 @@ type ExecuteCommandOptions struct {
 	Commands []string `json:"commands"`
 }
 
-// boolean | SelectionRangeOptions | SelectionRangeRegistrationOptions
+// SelectionRangeOptions boolean | SelectionRangeOptions | SelectionRangeRegistrationOptions
 type SelectionRangeOptions struct {
 	*WorkDoneProgressOptions
 	*TextDocumentRegistrationOptions
@@ -721,7 +721,7 @@ func (s *SelectionRangeOptions) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("expected boolean or SelectionRangeOptions")
 }
 
-// boolean | LinkedEditingRangeOptions | LinkedEditingRangeRegistrationOptions
+// LinkedEditingRangeOptions boolean | LinkedEditingRangeOptions | LinkedEditingRangeRegistrationOptions
 type LinkedEditingRangeOptions struct {
 	*WorkDoneProgressOptions
 	*TextDocumentRegistrationOptions
@@ -746,7 +746,7 @@ func (s *LinkedEditingRangeOptions) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("expected boolean or LinkedEditingRangeOptions")
 }
 
-// boolean | CallHierarchyOptions | CallHierarchyRegistrationOptions
+// CallHierarchyOptions boolean | CallHierarchyOptions | CallHierarchyRegistrationOptions
 type CallHierarchyOptions struct {
 	*WorkDoneProgressOptions
 	*TextDocumentRegistrationOptions
@@ -817,7 +817,7 @@ type SemanticTokensLegend struct {
 	TokenModifiers []string `json:"tokenModifiers"`
 }
 
-// boolean | MonikerOptions | MonikerRegistrationOptions is defined as follows:
+// MonikerOptions boolean | MonikerOptions | MonikerRegistrationOptions is defined as follows:
 type MonikerOptions struct {
 	*WorkDoneProgressOptions
 	*TextDocumentRegistrationOptions
@@ -849,7 +849,7 @@ type WorkspaceSymbolRegistrationOptions struct {
 	*WorkspaceSymbolOptions
 }
 
-// boolean | WorkspaceSymbolOptions where WorkspaceSymbolOptions is defined as follows:
+// UnmarshalJSON boolean | WorkspaceSymbolOptions where WorkspaceSymbolOptions is defined as follows:
 func (s *WorkspaceSymbolOptions) UnmarshalJSON(data []byte) error {
 	save := false
 	if err := json.Unmarshal(data, &save); err == nil {
@@ -882,7 +882,7 @@ type WorkspaceFoldersServerCapabilities struct {
 	ChangeNotifications json.RawMessage `json:"changeNotifications,omitempty"`
 }
 
-// The options to register for file operations.
+// FileOperationRegistrationOptions The options to register for file operations.
 //
 // @since 3.16.0
 type FileOperationRegistrationOptions struct {
@@ -890,7 +890,7 @@ type FileOperationRegistrationOptions struct {
 	Filters []FileOperationFilter `json:"filters"`
 }
 
-// A filter to describe in which file operation requests or notifications
+// FileOperationFilter A filter to describe in which file operation requests or notifications
 // the server is interested in.
 //
 // @since 3.16.0
@@ -902,7 +902,7 @@ type FileOperationFilter struct {
 	Pattern FileOperationPattern `json:"pattern"`
 }
 
-// A pattern to describe in which file operation requests or notifications
+// FileOperationPattern A pattern to describe in which file operation requests or notifications
 // the server is interested in.
 //
 // @since 3.16.0
@@ -929,19 +929,19 @@ type FileOperationPattern struct {
 	Options *FileOperationPatternOptions `json:"options,omitempty"`
 }
 
-// A pattern kind describing if a glob pattern matches a file a folder or
+// FileOperationPatternKind A pattern kind describing if a glob pattern matches a file a folder or
 // both.
 //
 // @since 3.16.0
 type FileOperationPatternKind string
 
-// The pattern matches a file only.
+// FileOperationPatternKindFile The pattern matches a file only.
 const FileOperationPatternKindFile FileOperationPatternKind = "file"
 
-// The pattern matches a folder only.
+// FileOperationPatternKindFolder The pattern matches a folder only.
 const FileOperationPatternKindFolder FileOperationPatternKind = "folder"
 
-// Matching options for the file operation pattern.
+// FileOperationPatternOptions Matching options for the file operation pattern.
 //
 // @since 3.16.0
 type FileOperationPatternOptions struct {

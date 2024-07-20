@@ -105,7 +105,7 @@ type InitializeResultServerInfo struct {
 	Version string `json:"version,omitempty"`
 }
 
-// If the protocol version provided by the client can't be handled by the
+// InitializeErrorUnknownProtocolVersion If the protocol version provided by the client can't be handled by the
 // server.
 //
 // @deprecated This initialize error got replaced by client capabilities.

@@ -16,16 +16,16 @@ type ShowMessageParams struct {
 
 type MessageType int
 
-// An error message.
+// MessageTypeError An error message.
 const MessageTypeError MessageType = 1
 
-// A warning message.
+// MessageTypeWarning A warning message.
 const MessageTypeWarning MessageType = 2
 
-// An information message.
+// MessageTypeInfo An information message.
 const MessageTypeInfo MessageType = 3
 
-// A log message.
+// MessageTypeLog A log message.
 const MessageTypeLog MessageType = 4
 
 type ShowMessageRequestParams struct {
@@ -44,7 +44,7 @@ type MessageActionItem struct {
 	Title string `json:"title,required"`
 }
 
-// Params to show a document.
+// ShowDocumentParams Params to show a document.
 //
 // @since 3.16.0
 type ShowDocumentParams struct {
@@ -69,7 +69,7 @@ type ShowDocumentParams struct {
 	Selection Range `json:"selection,omitempty"`
 }
 
-// The result of an show document request.
+// ShowDocumentResult The result of an show document request.
 //
 // @since 3.16.0
 type ShowDocumentResult struct {

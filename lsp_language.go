@@ -33,7 +33,7 @@ func (t TextDocumentPositionParams) String() string {
 	return t.TextDocument.String() + ":" + t.Position.String()
 }
 
-// Contains additional information about the context in which a completion
+// CompletionContext Contains additional information about the context in which a completion
 // request is triggered.
 type CompletionContext struct {
 	// How the completion was triggered.
@@ -45,22 +45,22 @@ type CompletionContext struct {
 	TriggerCharacter string `json:"triggerCharacter,omitempty"`
 }
 
-// How a completion was triggered
+// CompletionTriggerKind How a completion was triggered
 type CompletionTriggerKind int
 
-// Completion was triggered by typing an identifier (24x7 code
+// CompletionTriggerKindInvoked Completion was triggered by typing an identifier (24x7 code
 // complete), manual invocation (e.g Ctrl+Space) or via API.
 const CompletionTriggerKindInvoked CompletionTriggerKind = 1
 
-// Completion was triggered by a trigger character specified by
+// CompletionTriggerKindTriggerCharacter Completion was triggered by a trigger character specified by
 // the `triggerCharacters` properties of the
 // `CompletionRegistrationOptions`.
 const CompletionTriggerKindTriggerCharacter CompletionTriggerKind = 2
 
-// Completion was re-triggered as the current completion list is incomplete.
+// CompletionTriggerKindTriggerForIncompleteCompletions Completion was re-triggered as the current completion list is incomplete.
 const CompletionTriggerKindTriggerForIncompleteCompletions CompletionTriggerKind = 3
 
-// Params for the CodeActionRequest
+// CodeActionParams Params for the CodeActionRequest
 type CodeActionParams struct {
 	*WorkDoneProgressParams
 	*PartialResultParams
@@ -75,7 +75,7 @@ type CodeActionParams struct {
 	Context CodeActionContext `json:"context,required"`
 }
 
-// Contains additional diagnostic information about the context in which
+// CodeActionContext Contains additional diagnostic information about the context in which
 // a code action is run.
 type CodeActionContext struct {
 	// An array of diagnostics known on the client side overlapping the range
@@ -93,7 +93,7 @@ type CodeActionContext struct {
 	Only []CodeActionKind `json:"only,omitempty"`
 }
 
-// Structure to capture a description for an error code.
+// CodeDescription Structure to capture a description for an error code.
 //
 // @since 3.16.0
 type CodeDescription struct {
@@ -181,7 +181,7 @@ type SignatureHelpParams struct {
 	Context *SignatureHelpContext `json:"context,omitempty"`
 }
 
-// Additional information about the context in which a signature help request
+// SignatureHelpContext Additional information about the context in which a signature help request
 // was triggered.
 //
 // @since 3.15.0
@@ -209,22 +209,22 @@ type SignatureHelpContext struct {
 	ActiveSignatureHelp *SignatureHelp `json:"activeSignatureHelp,omitempty"`
 }
 
-// How a signature help was triggered.
+// SignatureHelpTriggerKind How a signature help was triggered.
 //
 // @since 3.15.0
 type SignatureHelpTriggerKind int
 
-// Signature help was invoked manually by the user or by a command.
+// SignatureHelpTriggerKindInvoked Signature help was invoked manually by the user or by a command.
 const SignatureHelpTriggerKindInvoked SignatureHelpTriggerKind = 1
 
-// Signature help was triggered by a trigger character.
+// SignatureHelpTriggerKindTriggerCharacter Signature help was triggered by a trigger character.
 const SignatureHelpTriggerKindTriggerCharacter SignatureHelpTriggerKind = 2
 
-// Signature help was triggered by the cursor moving or by the document
+// SignatureHelpTriggerKindContentChange Signature help was triggered by the cursor moving or by the document
 // content changing.
 const SignatureHelpTriggerKindContentChange SignatureHelpTriggerKind = 3
 
-// Signature help represents the signature of something
+// SignatureHelp Signature help represents the signature of something
 // callable. There can be multiple signature but only one
 // active and only one active parameter.
 type SignatureHelp struct {
@@ -253,7 +253,7 @@ type SignatureHelp struct {
 	ActiveParameter *int `json:"activeParameter,omitempty"`
 }
 
-// Represents the signature of something callable. A signature
+// SignatureInformation Represents the signature of something callable. A signature
 // can have a label, like a function-name, a doc-comment, and
 // a set of parameters.
 type SignatureInformation struct {
@@ -276,7 +276,7 @@ type SignatureInformation struct {
 	ActiveParameter *int `json:"activeParameter,omitempty"`
 }
 
-// Represents a parameter of a callable-signature. A parameter can
+// ParameterInformation Represents a parameter of a callable-signature. A parameter can
 // have a label and a doc-comment.
 type ParameterInformation struct {
 	// The label of this parameter information.
@@ -348,7 +348,7 @@ type DocumentOnTypeFormattingParams struct {
 	Options FormattingOptions `json:"options,required"`
 }
 
-// Represents a collection of [completion items](#CompletionItem) to be
+// CompletionList Represents a collection of [completion items](#CompletionItem) to be
 // presented in the editor.
 type CompletionList struct {
 	// This list is not complete. Further typing should result in recomputing
@@ -492,7 +492,7 @@ type CompletionItem struct {
 	Data json.RawMessage `json:"data,omitempty"`
 }
 
-// Additional details for a completion item label.
+// CompletionItemLabelDetails Additional details for a completion item label.
 //
 // @since 3.17.0 - proposed state
 type CompletionItemLabelDetails struct {
@@ -507,14 +507,14 @@ type CompletionItemLabelDetails struct {
 	Description string `json:"description,omitempty"`
 }
 
-// Defines whether the insert text in a completion item should be interpreted as
+// InsertTextFormat Defines whether the insert text in a completion item should be interpreted as
 // plain text or a snippet.
 type InsertTextFormat int
 
-// The primary text to be inserted is treated as a plain string.
+// InsertTextFormatPlainText The primary text to be inserted is treated as a plain string.
 const InsertTextFormatPlainText InsertTextFormat = 1
 
-// The primary text to be inserted is treated as a snippet.
+// InsertTextFormatSnippet The primary text to be inserted is treated as a snippet.
 //
 // A snippet can define tab stops and placeholders with `$1`, `$2`
 // and `${3:foo}`. `$0` defines the final tab stop, it defaults to
@@ -532,7 +532,7 @@ type TextEdit struct {
 	NewText string `json:"newText,required"`
 }
 
-// A special text edit to provide an insert and a replace operation.
+// InsertReplaceEdit A special text edit to provide an insert and a replace operation.
 //
 // @since 3.16.0
 type InsertReplaceEdit struct {
@@ -558,7 +558,7 @@ type Command struct {
 	Arguments []json.RawMessage `json:"arguments,omitempty"`
 }
 
-// A code action represents a change that can be performed in code, e.g. to fix
+// CodeAction A code action represents a change that can be performed in code, e.g. to fix
 // a problem or to refactor code.
 //
 // A CodeAction must set either `edit` and/or a `command`. If both are supplied,
@@ -666,7 +666,7 @@ type WorkspaceEdit struct {
 	ChangeAnnotations map[string]ChangeAnnotation `json:"changeAnnotations,omitempty"`
 }
 
-// Additional information that describes document changes.
+// ChangeAnnotation Additional information that describes document changes.
 //
 // @since 3.16.0
 type ChangeAnnotation struct {
@@ -683,7 +683,7 @@ type ChangeAnnotation struct {
 	Description string `json:"description,omitempty"`
 }
 
-// The result of a hover request.
+// Hover The result of a hover request.
 type Hover struct {
 	// The hover's content
 	Contents MarkupContent `json:"contents,required"`
@@ -712,7 +712,7 @@ type MarkedString struct {
 	Value    string `json:"value,required"`
 }
 
-// type MarkedString = string | { language: string; value: string };
+// UnmarshalJSON type MarkedString = string | { language: string; value: string };
 func (ms *MarkedString) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err == nil {
@@ -737,7 +737,7 @@ func (ms MarkedString) MarshalJSON() ([]byte, error) {
 	return json.Marshal(__(ms))
 }
 
-// A `MarkupContent` literal represents a string value which content is
+// MarkupContent A `MarkupContent` literal represents a string value which content is
 // interpreted base on its kind flag. Currently the protocol supports
 // `plaintext` and `markdown` as markup kinds.
 //
@@ -747,16 +747,18 @@ func (ms MarkedString) MarshalJSON() ([]byte, error) {
 // Here is an example how such a string can be constructed using
 // JavaScript / TypeScript:
 // ```typescript
-// let markdown: MarkdownContent = {
-// 	kind: MarkupKind.Markdown,
-// 	value: [
-// 		'# Header',
-// 		'Some text',
-// 		'```typescript',
-// 		'someCode();',
-// 		'```'
-// 	].join('\n')
-// };
+//
+//	let markdown: MarkdownContent = {
+//		kind: MarkupKind.Markdown,
+//		value: [
+//			'# Header',
+//			'Some text',
+//			'```typescript',
+//			'someCode();',
+//			'```'
+//		].join('\n')
+//	};
+//
 // ```
 //
 // Please Note* that clients might sanitize the return markdown. A client could
@@ -769,7 +771,7 @@ type MarkupContent struct {
 	Value string `json:"value,required"`
 }
 
-// Represents programming constructs like variables, classes, interfaces etc.
+// DocumentSymbol Represents programming constructs like variables, classes, interfaces etc.
 // that appear in a document. Document symbols can be hierarchical and they
 // have two ranges: one that encloses its definition and one that points to its
 // most interesting range, e.g. the range of an identifier.
@@ -810,7 +812,7 @@ type DocumentSymbol struct {
 	Children []DocumentSymbol `json:"children,omitempty"`
 }
 
-// Represents information about programming constructs like variables, classes,
+// SymbolInformation Represents information about programming constructs like variables, classes,
 // interfaces etc.
 type SymbolInformation struct {
 	// The name of this symbol.
@@ -847,7 +849,7 @@ type SymbolInformation struct {
 	ContainerName string `json:"containerName,omitempty"`
 }
 
-// The parameters of a Workspace Symbol Request.
+// WorkspaceSymbolParams The parameters of a Workspace Symbol Request.
 type WorkspaceSymbolParams struct {
 	*WorkDoneProgressParams
 	*PartialResultParams
@@ -857,7 +859,7 @@ type WorkspaceSymbolParams struct {
 	Query string `json:"query,required"`
 }
 
-// The parameters sent in notifications/requests for user-initiated creation
+// CreateFilesParams The parameters sent in notifications/requests for user-initiated creation
 // of files.
 //
 // @since 3.16.0
@@ -866,7 +868,7 @@ type CreateFilesParams struct {
 	Files []FileCreate `json:"files,required"`
 }
 
-// Represents information on a file/folder create.
+// FileCreate Represents information on a file/folder create.
 //
 // @since 3.16.0
 type FileCreate struct {
@@ -874,7 +876,7 @@ type FileCreate struct {
 	URI string `json:"uri,required"`
 }
 
-// The parameters sent in notifications/requests for user-initiated renames
+// RenameFilesParams The parameters sent in notifications/requests for user-initiated renames
 // of files.
 //
 // @since 3.16.0
@@ -884,7 +886,7 @@ type RenameFilesParams struct {
 	Files []FileRename `json:"files,required"`
 }
 
-// Represents information on a file/folder rename.
+// FileRename Represents information on a file/folder rename.
 //
 // @since 3.16.0
 type FileRename struct {
@@ -895,7 +897,7 @@ type FileRename struct {
 	NewURI string `json:"newUri,required"`
 }
 
-// The parameters sent in notifications/requests for user-initiated deletes
+// DeleteFilesParams The parameters sent in notifications/requests for user-initiated deletes
 // of files.
 //
 // @since 3.16.0
@@ -904,7 +906,7 @@ type DeleteFilesParams struct {
 	Files []FileDelete `json:"files,required"`
 }
 
-// Represents information on a file/folder delete.
+// FileDelete Represents information on a file/folder delete.
 //
 // @since 3.16.0
 type FileDelete struct {
@@ -920,7 +922,7 @@ type CodeLensParams struct {
 	TextDocument TextDocumentIdentifier `json:"textDocument,required"`
 }
 
-// A code lens represents a command that should be shown along with
+// CodeLens A code lens represents a command that should be shown along with
 // source text, like the number of references, a way to run tests, etc.
 //
 // A code lens is _unresolved_ when no command is associated to it. For
@@ -951,19 +953,19 @@ type FoldingRangeParams struct {
 	RextDocument TextDocumentIdentifier `json:"textDocument,required"`
 }
 
-// Enum of known range kinds
+// FoldingRangeKind Enum of known range kinds
 type FoldingRangeKind string
 
-// Folding range for a comment
+// FoldingRangeKindComment Folding range for a comment
 const FoldingRangeKindComment FoldingRangeKind = "comment"
 
-// Folding range for a imports or includes
+// FoldingRangeKindImports Folding range for a imports or includes
 const FoldingRangeKindImports FoldingRangeKind = "imports"
 
-// Folding range for a region (e.g. `#region`)
+// FoldingRangeKindRegion Folding range for a region (e.g. `#region`)
 const FoldingRangeKindRegion FoldingRangeKind = "region"
 
-// Represents a folding range. To be valid, start and end line must be bigger
+// FoldingRange Represents a folding range. To be valid, start and end line must be bigger
 // than zero and smaller than the number of lines in the document. Clients
 // are free to ignore invalid ranges.
 type FoldingRange struct {
@@ -1162,34 +1164,34 @@ type MonikerParams struct {
 	*PartialResultParams
 }
 
-// Moniker uniqueness level to define scope of the moniker.
+// UniquenessLevel Moniker uniqueness level to define scope of the moniker.
 type UniquenessLevel string
 
-// The moniker is only unique inside a document
+// UniquenessLevelDocument The moniker is only unique inside a document
 const UniquenessLevelDocument UniquenessLevel = "document"
 
-// The moniker is unique inside a project for which a dump got created
+// UniquenessLevelProject The moniker is unique inside a project for which a dump got created
 const UniquenessLevelProject UniquenessLevel = "project"
 
-// The moniker is unique inside the group to which a project belongs
+// UniquenessLevelGroup The moniker is unique inside the group to which a project belongs
 const UniquenessLevelGroup UniquenessLevel = "group"
 
-// The moniker is unique inside the moniker scheme.
+// UniquenessLevelScheme The moniker is unique inside the moniker scheme.
 const UniquenessLevelScheme UniquenessLevel = "scheme"
 
-// The moniker is globally unique
+// UniquenessLevelGlobal The moniker is globally unique
 const UniquenessLevelGlobal UniquenessLevel = "global"
 
-// The moniker kind.
+// MonikerKind The moniker kind.
 type MonikerKind string
 
-// The moniker represent a symbol that is imported into a project
+// MonikerKindImport The moniker represent a symbol that is imported into a project
 const MonikerKindImport MonikerKind = "import"
 
-// The moniker represents a symbol that is exported from a project
+// MonikerKindExport The moniker represents a symbol that is exported from a project
 const MonikerKindExport MonikerKind = "export"
 
-// The moniker represents a symbol that is local to a project (e.g. a local
+// MonikerKindLocal The moniker represents a symbol that is local to a project (e.g. a local
 // variable of a function, a class not visible outside the project, ...)
 const MonikerKindLocal MonikerKind = "local"
 

@@ -23,7 +23,7 @@ func TestDecodingProgressReports(t *testing.T) {
 			Percentage:  &perc,
 		}
 
-		beginJson := `{
+		beginJSON := `{
 			"cancellable" : true,
 			"kind" : "begin",
 			"message" : "mesg",
@@ -32,13 +32,13 @@ func TestDecodingProgressReports(t *testing.T) {
 		}`
 		beginData, err := json.Marshal(beginParam)
 		require.NoError(t, err)
-		require.JSONEq(t, beginJson, string(beginData))
+		require.JSONEq(t, beginJSON, string(beginData))
 
-		err = json.Unmarshal([]byte(beginJson), &beginParam)
+		err = json.Unmarshal([]byte(beginJSON), &beginParam)
 		require.NoError(t, err)
 	}
 	{
-		begin_json := `{
+		beginJSON := `{
 			"token": "aaaa10292992929287172",
 			"value": {
 				"kind": "begin",
@@ -46,7 +46,7 @@ func TestDecodingProgressReports(t *testing.T) {
 				"cancellable": true
 			}
 		}`
-		r, err := DecodeServerNotificationParams("$/progress", json.RawMessage([]byte(begin_json)))
+		r, err := DecodeServerNotificationParams("$/progress", json.RawMessage([]byte(beginJSON)))
 		require.NoError(t, err)
 		require.IsType(t, &ProgressParams{}, r)
 		pp := r.(*ProgressParams)
@@ -62,7 +62,7 @@ func TestDecodingProgressReports(t *testing.T) {
 			Percentage:  &perc,
 		}
 
-		reportJson := `{
+		reportJSON := `{
 			"cancellable" : true,
 			"kind" : "report",
 			"message" : "mesg",
@@ -70,13 +70,13 @@ func TestDecodingProgressReports(t *testing.T) {
 		}`
 		reportData, err := json.Marshal(reportParam)
 		require.NoError(t, err)
-		require.JSONEq(t, reportJson, string(reportData))
+		require.JSONEq(t, reportJSON, string(reportData))
 
-		err = json.Unmarshal([]byte(reportJson), &reportParam)
+		err = json.Unmarshal([]byte(reportJSON), &reportParam)
 		require.NoError(t, err)
 	}
 	{
-		report_json := `{
+		reportJSON := `{
 			"token": "aaaa10292992929287172",
 			"value": {
 				"kind": "report",
@@ -84,7 +84,7 @@ func TestDecodingProgressReports(t *testing.T) {
 				"cancellable": true
 			}
 		}`
-		r, err := DecodeServerNotificationParams("$/progress", json.RawMessage([]byte(report_json)))
+		r, err := DecodeServerNotificationParams("$/progress", json.RawMessage([]byte(reportJSON)))
 		require.NoError(t, err)
 		require.IsType(t, &ProgressParams{}, r)
 		pp := r.(*ProgressParams)
@@ -97,26 +97,26 @@ func TestDecodingProgressReports(t *testing.T) {
 			Message: "mesg",
 		}
 
-		endJson := `{
+		endJSON := `{
 			"kind" : "end",
 			"message" : "mesg"
 		}`
 		endData, err := json.Marshal(endParam)
 		require.NoError(t, err)
-		require.JSONEq(t, endJson, string(endData))
+		require.JSONEq(t, endJSON, string(endData))
 
-		err = json.Unmarshal([]byte(endJson), &endParam)
+		err = json.Unmarshal([]byte(endJSON), &endParam)
 		require.NoError(t, err)
 	}
 	{
-		end_json := `{
+		endJSON := `{
 			"token": "aaaa10292992929287172",
 			"value": {
 				"kind": "end",
 				"message": "bye"
 			}
 		}`
-		r, err := DecodeServerNotificationParams("$/progress", json.RawMessage([]byte(end_json)))
+		r, err := DecodeServerNotificationParams("$/progress", json.RawMessage([]byte(endJSON)))
 		require.NoError(t, err)
 		require.IsType(t, &ProgressParams{}, r)
 		pp := r.(*ProgressParams)

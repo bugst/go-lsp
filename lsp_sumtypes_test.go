@@ -14,8 +14,8 @@ import (
 )
 
 func TestSumTypes(t *testing.T) {
-	com_json := "{\"title\":\"command_title\",\"command\":\"command\"}"
-	ca_json := "{\"title\":\"codeaction_title\",\"kind\":\"quickfix\",\"isPreferred\":true,\"command\":{\"title\":\"command_title\",\"command\":\"command\"}}"
+	comJSON := "{\"title\":\"command_title\",\"command\":\"command\"}"
+	caJSON := "{\"title\":\"codeaction_title\",\"kind\":\"quickfix\",\"isPreferred\":true,\"command\":{\"title\":\"command_title\",\"command\":\"command\"}}"
 
 	{
 		var c CommandOrCodeAction
@@ -25,7 +25,7 @@ func TestSumTypes(t *testing.T) {
 		})
 		data, err := json.Marshal(c)
 		require.NoError(t, err)
-		require.Equal(t, com_json, string(data))
+		require.Equal(t, comJSON, string(data))
 	}
 	{
 		var c CommandOrCodeAction
@@ -40,12 +40,12 @@ func TestSumTypes(t *testing.T) {
 		})
 		data, err := json.Marshal(c)
 		require.NoError(t, err)
-		require.Equal(t, ca_json, string(data))
+		require.Equal(t, caJSON, string(data))
 	}
 
 	{
 		var c CommandOrCodeAction
-		err := json.Unmarshal([]byte(com_json), &c)
+		err := json.Unmarshal([]byte(comJSON), &c)
 		require.NoError(t, err)
 		res := c.Get()
 		require.IsType(t, Command{}, res)
@@ -53,7 +53,7 @@ func TestSumTypes(t *testing.T) {
 	}
 	{
 		var c CommandOrCodeAction
-		err := json.Unmarshal([]byte(ca_json), &c)
+		err := json.Unmarshal([]byte(caJSON), &c)
 		require.NoError(t, err)
 		res := c.Get()
 		require.IsType(t, CodeAction{}, res)
@@ -62,7 +62,7 @@ func TestSumTypes(t *testing.T) {
 
 	// Let's try an array of CommandOrCodeActions...
 	{
-		jsonIn := json.RawMessage("[" + ca_json + "," + com_json + "," + ca_json + "," + ca_json + "," + com_json + "]")
+		jsonIn := json.RawMessage("[" + caJSON + "," + comJSON + "," + caJSON + "," + caJSON + "," + comJSON + "]")
 		res, err := DecodeServerResponseResult("textDocument/codeAction", jsonIn)
 		require.NoError(t, err)
 		require.IsType(t, []CommandOrCodeAction{}, res)

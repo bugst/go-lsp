@@ -66,7 +66,7 @@ func (v VersionedTextDocumentIdentifier) String() string {
 	return fmt.Sprintf("%s@%d", v.TextDocumentIdentifier, v.Version)
 }
 
-// An event describing a change to a text document. If range and rangeLength are
+// TextDocumentContentChangeEvent An event describing a change to a text document. If range and rangeLength are
 // omitted the new text is considered to be the full content of the document.
 type TextDocumentContentChangeEvent struct {
 	// The range of the document that changed.
@@ -131,7 +131,7 @@ type RenameParams struct {
 	NewName string `json:"newName,required"`
 }
 
-// The parameters send in a will save text document notification.
+// WillSaveTextDocumentParams The parameters send in a will save text document notification.
 type WillSaveTextDocumentParams struct {
 	// The document that will be saved.
 	RextDocument TextDocumentIdentifier `json:"textDocument,required"`
@@ -140,15 +140,15 @@ type WillSaveTextDocumentParams struct {
 	Reason TextDocumentSaveReason `json:"reason,required"`
 }
 
-// Represents reasons why a text document is saved.
+// TextDocumentSaveReason Represents reasons why a text document is saved.
 type TextDocumentSaveReason int
 
-// Manually triggered, e.g. by the user pressing save, by starting
+// TextDocumentSaveReasonManual Manually triggered, e.g. by the user pressing save, by starting
 // debugging, or by an API call.
 const TextDocumentSaveReasonManual TextDocumentSaveReason = 1
 
-// Automatic after a delay.
+// TextDocumentSaveReasonAfterDelay Automatic after a delay.
 const TextDocumentSaveReasonAfterDelay TextDocumentSaveReason = 2
 
-// When the editor lost focus.
+// TextDocumentSaveReasonFocusOut When the editor lost focus.
 const TextDocumentSaveReasonFocusOut TextDocumentSaveReason = 3

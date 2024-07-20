@@ -4,5 +4,5 @@
 // license that can be found in the LICENSE file.
 //
 
-// lsp is an implementation of a Language Server Protocol handler.
+// Package lsp is an implementation of a Language Server Protocol handler.
 package lsp

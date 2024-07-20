@@ -96,7 +96,7 @@ func (ds DiagnosticSeverity) String() string {
 	}
 }
 
-// The diagnostic tags.
+// DiagnosticTag The diagnostic tags.
 //
 // @since 3.15.0
 type DiagnosticTag int
@@ -112,7 +112,7 @@ const DiagnosticTagUnnecessary DiagnosticTag = 1
 // Clients are allowed to rendered diagnostics with this tag strike through.
 const DiagnosticTagDeprecated DiagnosticTag = 2
 
-// Represents a related message and source code location for a diagnostic.
+// DiagnosticRelatedInformation Represents a related message and source code location for a diagnostic.
 // This should be used to point to code locations that cause or are related to
 // a diagnostics, e.g when duplicating a symbol in a scope.
 type DiagnosticRelatedInformation struct {

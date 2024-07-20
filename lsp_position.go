@@ -83,7 +83,7 @@ type LocationLink struct {
 	TargetSelectionRange Range `json:"targetSelectionRange,required"`
 }
 
-// A document highlight is a range inside a text document which deserves
+// DocumentHighlight A document highlight is a range inside a text document which deserves
 // special attention. Usually a document highlight is visualized by changing
 // the background color of its range.
 type DocumentHighlight struct {
@@ -94,14 +94,14 @@ type DocumentHighlight struct {
 	Kind DocumentHighlightKind `json:"kind,omitempty"`
 }
 
-// A document highlight kind.
+// DocumentHighlightKind A document highlight kind.
 type DocumentHighlightKind int
 
-// A textual occurrence.
+// DocumentHighlightKindText A textual occurrence.
 const DocumentHighlightKindText DocumentHighlightKind = 1
 
-// Read-access of a symbol, like reading a variable.
+// DocumentHighlightKindRead Read-access of a symbol, like reading a variable.
 const DocumentHighlightKindRead DocumentHighlightKind = 2
 
-// Write-access of a symbol, like writing to a variable.
+// DocumentHighlightKindWrite Write-access of a symbol, like writing to a variable.
 const DocumentHighlightKindWrite DocumentHighlightKind = 3

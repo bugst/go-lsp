@@ -260,7 +260,7 @@ func (p WorkDoneProgressEnd) String() string {
 	return res
 }
 
-// General parameters to register for a capability.
+// Registration General parameters to register for a capability.
 type Registration struct {
 	// The id used to register the request. The id can be used to deregister
 	// the request again.
@@ -277,7 +277,7 @@ type RegistrationParams struct {
 	Registrations []Registration `json:"registrations,required"`
 }
 
-// General parameters to unregister a capability.
+// Unregistration General parameters to unregister a capability.
 type Unregistration struct {
 	// The id used to unregister the request or notification. Usually an id
 	// provided during the register request.

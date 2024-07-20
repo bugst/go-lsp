@@ -186,32 +186,32 @@ type WorkspaceEditClientCapabilities struct {
 
 type ResourceOperationKind string
 
-// ResourceOperationKindCreate: Supports creating new files and folders.
+// ResourceOperationKindCreate Supports creating new files and folders.
 const ResourceOperationKindCreate = ResourceOperationKind("create")
 
-// ResourceOperationKindRename: Supports renaming existing files and folders.
+// ResourceOperationKindRename Supports renaming existing files and folders.
 const ResourceOperationKindRename = ResourceOperationKind("rename")
 
-// ResourceOperationKindDelete: Supports deleting existing files and folders.
+// ResourceOperationKindDelete Supports deleting existing files and folders.
 const ResourceOperationKindDelete = ResourceOperationKind("delete")
 
 type FailureHandlingKind string
 
-// FailureHandlingKindAbort: Applying the workspace change is simply aborted if one of the changes
+// FailureHandlingKindAbort Applying the workspace change is simply aborted if one of the changes
 // provided fails. All operations executed before the failing operation
 // stay executed.
 const FailureHandlingKindAbort FailureHandlingKind = "abort"
 
-// FailureHandlingKindTransactional: All operations are executed transactional. That means they either all
+// FailureHandlingKindTransactional All operations are executed transactional. That means they either all
 // succeed or no changes at all are applied to the workspace.
 const FailureHandlingKindTransactional FailureHandlingKind = "transactional"
 
-// FailureHandlingKindTextOnlyTransactional: If the workspace edit contains only textual file changes they are
+// FailureHandlingKindTextOnlyTransactional If the workspace edit contains only textual file changes they are
 // executed transactional. If resource changes (create, rename or delete
 // file) are part of the change the failure handling strategy is abort.
 const FailureHandlingKindTextOnlyTransactional FailureHandlingKind = "textOnlyTransactional"
 
-// FailureHandlingKindUndo: The client tries to undo the operations already executed. But there is no
+// FailureHandlingKindUndo The client tries to undo the operations already executed. But there is no
 // guarantee that this is succeeding.
 const FailureHandlingKindUndo FailureHandlingKind = "undo"
 
@@ -587,35 +587,35 @@ type CompletionKindCapabilities struct {
 
 type MarkupKind string
 
-// Plain text is supported as a content format
+// MarkupKindPlainText Plain text is supported as a content format
 const MarkupKindPlainText MarkupKind = "plaintext"
 
-// Markdown is supported as a content format
+// MarkupKindMarkdown Markdown is supported as a content format
 const MarkupKindMarkdown MarkupKind = "markdown"
 
-// Completion item tags are extra annotations that tweak the rendering of a
+// CompletionItemTag Completion item tags are extra annotations that tweak the rendering of a
 // completion item.
 //
 // @since 3.15.0
 type CompletionItemTag int
 
-// Render a completion as obsolete, usually using a strike-out.
+// CompletionItemTagDeprecated Render a completion as obsolete, usually using a strike-out.
 const CompletionItemTagDeprecated CompletionItemTag = 1
 
-// How whitespace and indentation is handled during completion
+// InsertTextMode How whitespace and indentation is handled during completion
 // item insertion.
 //
 // @since 3.16.0
 type InsertTextMode int
 
-// The insertion or replace strings is taken as it is. If the
+// InsertTextModeAsIs The insertion or replace strings is taken as it is. If the
 // value is multi line the lines below the cursor will be
 // inserted using the indentation defined in the string value.
 // The client will not apply any kind of adjustments to the
 // string.
 const InsertTextModeAsIs InsertTextMode = 1
 
-// The editor adjusts leading whitespace of new lines so that
+// InsertTextModeAdjustIndentation The editor adjusts leading whitespace of new lines so that
 // they match the indentation up to the cursor of the line for
 // which the item is accepted.
 //
@@ -624,7 +624,7 @@ const InsertTextModeAsIs InsertTextMode = 1
 // following lines inserted will be indented using 2 tabs as well.
 const InsertTextModeAdjustIndentation InsertTextMode = 2
 
-// The kind of a completion entry.
+// CompletionItemKind The kind of a completion entry.
 type CompletionItemKind int
 
 const CompletionItemKindText CompletionItemKind = 1
@@ -1134,7 +1134,7 @@ type MonikerClientCapabilities struct {
 	DynamicRegistration bool `json:"dynamicRegistration,omitempty"`
 }
 
-// The kind of a code action.
+// CodeActionKind The kind of a code action.
 //
 // Kinds are a hierarchical list of identifiers separated by `.`,
 // e.g. `"refactor.extract.function"`.
@@ -1143,16 +1143,16 @@ type MonikerClientCapabilities struct {
 // to the server during initialization.
 type CodeActionKind string
 
-// Empty kind.
+// CodeActionKindEmpty Empty kind.
 const CodeActionKindEmpty CodeActionKind = ""
 
-// Base kind for quickfix actions: "quickfix".
+// CodeActionKindQuickFix Base kind for quickfix actions: "quickfix".
 const CodeActionKindQuickFix CodeActionKind = "quickfix"
 
-// Base kind for refactoring actions: "refactor".
+// CodeActionKindRefactor Base kind for refactoring actions: "refactor".
 const CodeActionKindRefactor CodeActionKind = "refactor"
 
-// Base kind for refactoring extraction actions: "refactor.extract".
+// CodeActionKindRefactorExtract Base kind for refactoring extraction actions: "refactor.extract".
 //
 // Example extract actions:
 //
@@ -1163,7 +1163,7 @@ const CodeActionKindRefactor CodeActionKind = "refactor"
 // - ...
 const CodeActionKindRefactorExtract CodeActionKind = "refactor.extract"
 
-// Base kind for refactoring inline actions: "refactor.inline".
+// CodeActionKindRefactorInline Base kind for refactoring inline actions: "refactor.inline".
 //
 // Example inline actions:
 //
@@ -1173,7 +1173,7 @@ const CodeActionKindRefactorExtract CodeActionKind = "refactor.extract"
 // - ...
 const CodeActionKindRefactorInline CodeActionKind = "refactor.inline"
 
-// Base kind for refactoring rewrite actions: "refactor.rewrite".
+// CodeActionKindRefactorRewrite Base kind for refactoring rewrite actions: "refactor.rewrite".
 //
 // Example rewrite actions:
 //
@@ -1185,16 +1185,16 @@ const CodeActionKindRefactorInline CodeActionKind = "refactor.inline"
 // - ...
 const CodeActionKindRefactorRewrite CodeActionKind = "refactor.rewrite"
 
-// Base kind for source actions: `source`.
+// CodeActionKindSource Base kind for source actions: `source`.
 //
 // Source code actions apply to the entire file.
 const CodeActionKindSource CodeActionKind = "source"
 
-// Base kind for an organize imports source action:
+// CodeActionKindSourceOrganizeImports Base kind for an organize imports source action:
 // `source.organizeImports`.
 const CodeActionKindSourceOrganizeImports CodeActionKind = "source.organizeImports"
 
-// Base kind for a "fix all" source action: `source.fixAll`.
+// CodeActionKindSourceFixAll Base kind for a "fix all" source action: `source.fixAll`.
 //
 // "Fix all" actions automatically fix errors that have a clear fix that
 // do not require user input. They should not suppress errors or perform
@@ -1205,7 +1205,7 @@ const CodeActionKindSourceFixAll CodeActionKind = "source.fixAll"
 
 type PrepareSupportDefaultBehavior int
 
-// The client's default behavior is to select the identifier
+// PrepareSupportDefaultBehaviorIdentifier The client's default behavior is to select the identifier
 // according the to language's syntax rule.
 const PrepareSupportDefaultBehaviorIdentifier = 1
 
@@ -1213,7 +1213,7 @@ type TokenFormat string
 
 const TokenFormatRelative TokenFormat = "relative"
 
-// Show message request client capabilities
+// ShowMessageRequestClientCapabilities Show message request client capabilities
 type ShowMessageRequestClientCapabilities struct {
 	// Capabilities specific to the `MessageActionItem` type.
 	MessageActionItem struct {
@@ -1225,7 +1225,7 @@ type ShowMessageRequestClientCapabilities struct {
 	} `json:"messageActionItem"`
 }
 
-// Client capabilities for the show document request.
+// ShowDocumentClientCapabilities Client capabilities for the show document request.
 //
 // @since 3.16.0
 type ShowDocumentClientCapabilities struct {
@@ -1234,7 +1234,7 @@ type ShowDocumentClientCapabilities struct {
 	Support bool `json:"support"`
 }
 
-// Client capabilities specific to regular expressions.
+// RegularExpressionsClientCapabilities Client capabilities specific to regular expressions.
 type RegularExpressionsClientCapabilities struct {
 	// The engine's name.
 	Engine string `json:"engine,required"`
@@ -1243,7 +1243,7 @@ type RegularExpressionsClientCapabilities struct {
 	Version string `json:"version,omitempty"`
 }
 
-// Client capabilities specific to the used markdown parser.
+// MarkdownClientCapabilities Client capabilities specific to the used markdown parser.
 //
 // @since 3.16.0
 type MarkdownClientCapabilities struct {
@@ -1262,7 +1262,7 @@ type DocumentLinkParams struct {
 	TextDocument TextDocumentIdentifier `json:"textDocument,required"`
 }
 
-// A document link is a range in a text document that links to an internal or
+// DocumentLink A document link is a range in a text document that links to an internal or
 // external resource, like another text document or a web site.
 type DocumentLink struct {
 	// The range this link applies to.
@@ -1301,7 +1301,7 @@ type ColorInformation struct {
 	Color Color `json:"color,required"`
 }
 
-// Represents a color in RGBA space.
+// Color Represents a color in RGBA space.
 type Color struct {
 	// The red component of this color in the range [0-1].
 	Red float64 `json:"red,required"`

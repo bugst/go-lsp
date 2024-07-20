@@ -10,11 +10,8 @@ import (
 	"go.bug.st/json"
 )
 
-//   ___   REQUEST
-//      \
-//  /___/
-//  \
-func DecodeClientRequestParams(method string, req json.RawMessage) (interface{}, error) {
+// DecodeClientRequestParams parse a CLIENT-REQUEST (↩)
+func DecodeClientRequestParams(method string, req json.RawMessage) (any, error) {
 	switch method {
 	case "initialize":
 		var res InitializeParams
@@ -148,10 +145,7 @@ func DecodeClientRequestParams(method string, req json.RawMessage) (interface{},
 	}
 }
 
-//   ___
-//      \
-//  /___/  RESPONSE
-//  \
+// DecodeServerResponseResult parse a SERVER-RESPONSE to a CLIENT-REQUEST (↩)
 func DecodeServerResponseResult(method string, resp json.RawMessage) (interface{}, error) {
 	switch method {
 	case "initialize":
@@ -465,10 +459,7 @@ func DecodeServerResponseResult(method string, resp json.RawMessage) (interface{
 	}
 }
 
-//   ___  REQUEST
-//  /
-//  \___\
-//      /
+// DecodeServerRequestParams parse a SERVER-REQUEST (↪)
 func DecodeServerRequestParams(method string, req json.RawMessage) (interface{}, error) {
 	switch method {
 	case "window/showMessageRequest":
@@ -501,10 +492,7 @@ func DecodeServerRequestParams(method string, req json.RawMessage) (interface{},
 	}
 }
 
-//   ___
-//  /
-//  \___\  RESPONSE
-//      /
+// DecodeClientResponseResult parse a CLIENT-RESPONSE to a SERVER-REQUEST (↪)
 func DecodeClientResponseResult(method string, resp json.RawMessage) (interface{}, error) {
 	switch method {
 	case "window/showMessageRequest":
@@ -544,8 +532,7 @@ func DecodeClientResponseResult(method string, resp json.RawMessage) (interface{
 	}
 }
 
-// ____\  NOTIFICATION
-//     /
+// DecodeClientNotificationParams parse a CLIENT-NOTIFICATION (→)
 func DecodeClientNotificationParams(method string, req json.RawMessage) (interface{}, error) {
 	switch method {
 	case "$/progress":
@@ -602,8 +589,7 @@ func DecodeClientNotificationParams(method string, req json.RawMessage) (interfa
 	}
 }
 
-// NOTIFICATION /___
-//              \
+// DecodeServerNotificationParams parse a SERVER-NOTIFICATION (←)
 func DecodeServerNotificationParams(method string, req json.RawMessage) (interface{}, error) {
 	switch method {
 	case "$/progress":
