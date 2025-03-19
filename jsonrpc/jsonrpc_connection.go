@@ -277,7 +277,7 @@ func (c *Connection) SendRequest(ctx context.Context, method string, params json
 		_, active := c.activeOutRequests[id]
 		c.activeOutRequestsMutex.Unlock()
 		if active {
-			if notif, err := json.Marshal(CancelParams{ID: encodedId}); err != nil {
+			if notif, err := json.Marshal(CancelParams{ID: encodedID}); err != nil {
 				// should never happen
 				panic("internal error: failed json encoding")
 			} else {
