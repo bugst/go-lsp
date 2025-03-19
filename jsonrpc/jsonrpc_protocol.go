@@ -155,4 +155,4 @@ type ProgressParams struct {
 }
 
 // ProgressToken is a progress token
-type ProgressToken json.RawMessage
+type ProgressToken string
